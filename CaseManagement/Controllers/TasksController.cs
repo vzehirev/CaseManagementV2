@@ -1,10 +1,13 @@
 ﻿using CaseManagement.Models;
+using CaseManagement.Services.Cases;
 using CaseManagement.Services.Tasks;
 using CaseManagement.Services.Users;
 using CaseManagement.ViewModels.Tasks;
+using CaseManagement.ViewModels.Tasks.Create;
 using CaseManagement.ViewModels.Tasks.Input;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CaseManagement.Controllers
@@ -14,41 +17,38 @@ namespace CaseManagement.Controllers
     {
         private readonly IUsersService usersService;
         private readonly ITasksService tasksService;
+        private readonly ICasesService casesService;
 
-        public TasksController(IUsersService usersService, ITasksService tasksService)
+        public TasksController(IUsersService usersService, ITasksService tasksService, ICasesService casesService)
         {
             this.usersService = usersService;
             this.tasksService = tasksService;
+            this.casesService = casesService;
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int caseId)
         {
-            CreateTaskInputModel model = new CreateTaskInputModel
-            {
-                // Populate drop-down menus' options
-                TaskTypes = await tasksService.GetAllTaskTypesAsync(),
-                TaskStatuses = await tasksService.GetAllTaskStatusesAsync(),
-            };
+            var viewModel = await tasksService.GenerateTaskCreateViewModel(caseId);
 
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateTaskInputModel inputModel, int id)
+        public async Task<IActionResult> Create(TaskCreateViewModel viewModel)
         {
-            inputModel.CaseId = id;
-
             if (!ModelState.IsValid)
             {
-                // Populate drop-down menus' options and return create page to edit data and re-submit
-                inputModel.TaskTypes = await tasksService.GetAllTaskTypesAsync();
-                inputModel.TaskStatuses = await tasksService.GetAllTaskStatusesAsync();
+                viewModel.AllPriorities = await this.casesService.GetAllCasePrioritiesAsync();
+                viewModel.AllQueueStatuses = await this.casesService.GetAllQueueStatusesAsync();
+                viewModel.AllStatuses = await this.casesService.GetAllCaseStatusesAsync();
+                viewModel.AllTypes = await this.casesService.GetAllCaseTypesAsync();
+                viewModel.AllWaitingReasons = await this.casesService.GetAllWaitingReasonsAsync();
 
-                return View(inputModel);
+                return View(viewModel);
             }
 
             string userId = usersService.UserManager.GetUserId(User);
-            int createResult = await tasksService.CreateTaskAsync(inputModel, userId);
+            int createResult = await tasksService.CreateTaskAsync(viewModel, userId);
 
             if (createResult > 0)
             {
@@ -56,7 +56,7 @@ namespace CaseManagement.Controllers
 
                 TempData["TaskCreatedSuccessfully"] = true;
 
-                return LocalRedirect($"/Cases/ViewUpdate/{inputModel.CaseId}#tasks-table");
+                return LocalRedirect($"/Cases/ViewUpdate/{viewModel.CaseId}#tasks-table");
             }
 
             return View("Error", new ErrorViewModel());

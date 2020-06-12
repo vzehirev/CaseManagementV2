@@ -7,6 +7,7 @@ using CaseManagement.Models.TaskModels;
 using CaseManagement.Models.TimeZoneRegions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CaseManagement.Data
 {
@@ -15,6 +16,16 @@ namespace CaseManagement.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(x => x.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+            base.OnModelCreating(builder);
         }
 
         public DbSet<Case> Cases { get; set; }
@@ -54,5 +65,11 @@ namespace CaseManagement.Data
         public DbSet<Region> Regions { get; set; }
 
         public DbSet<DCMOpsMonitoringRow> DCMOpsMonitoring { get; set; }
+
+        public DbSet<QueueStatus> QueueStatuses { get; set; }
+
+        public DbSet<WaitingReason> WaitingReasons { get; set; }
+
+        public DbSet<DcmOpsMonitoringTableProcessorError> DcmOpsMonitoringTableProcessorErrors { get; set; }
     }
 }

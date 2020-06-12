@@ -1,8 +1,11 @@
+using CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor;
 using CaseManagement.Data;
 using CaseManagement.Models;
 using CaseManagement.Services;
 using CaseManagement.Services.Announcements;
+using CaseManagement.Services.CasePriorities;
 using CaseManagement.Services.Cases;
+using CaseManagement.Services.CaseStatuses;
 using CaseManagement.Services.DatacentersService;
 using CaseManagement.Services.DateTimeConverter;
 using CaseManagement.Services.Monitoring;
@@ -42,8 +45,14 @@ namespace CaseManagement
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
+            // DcmOpsMonitoring table data auto processor
+            services.AddHostedService<ProcessorRunner>();
+            services.AddScoped<IScopedProcessingService, Processor>();
+
             // Application services
             services.AddTransient<ICasesService, CasesService>();
+            services.AddTransient<ICaseStatusesService, CaseStatusesService>();
+            services.AddTransient<ICasePrioritiesService, CasePrioritiesService>();
             services.AddTransient<ITasksService, TasksService>();
             services.AddTransient<IAnnouncementsService, AnnouncementsService>();
             services.AddTransient<IAgentsStatisticsAndReportsService, AgentsStatisticsAndReportsService>();

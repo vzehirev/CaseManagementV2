@@ -1,4 +1,5 @@
 ﻿using CaseManagement.Models.CaseModels;
+using CaseManagement.ViewModels.CaseType;
 using CaseManagement.ViewModels.Tasks.Output;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace CaseManagement.ViewModels.Cases
         [Display(Name = "Subject")]
         public string Subject { get; set; }
 
-        public int? TypeId { get; set; }
+        public int TypeId { get; set; }
 
         public int? PhaseId { get; set; }
 
@@ -39,7 +40,7 @@ namespace CaseManagement.ViewModels.Cases
 
         public IEnumerable<CasePriority> CasePriorities { get; set; }
 
-        public IEnumerable<CaseType> CaseTypes { get; set; }
+        public IEnumerable<CaseTypeViewModel> CaseTypes { get; set; }
 
         public IEnumerable<Service> CaseServices { get; set; }
 

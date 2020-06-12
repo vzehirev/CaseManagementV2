@@ -2,12 +2,20 @@
 using CaseManagement.Data.Extensions;
 using CaseManagement.Models;
 using CaseManagement.Models.CaseModels;
+using CaseManagement.Models.TaskModels;
+using CaseManagement.ViewModels.CasePriorities;
 using CaseManagement.ViewModels.CasePriorities.Output;
 using CaseManagement.ViewModels.Cases;
+using CaseManagement.ViewModels.Cases.Index;
 using CaseManagement.ViewModels.Cases.Input;
 using CaseManagement.ViewModels.Cases.Output;
+using CaseManagement.ViewModels.Cases.ViewUpdate;
+using CaseManagement.ViewModels.CaseStatuses;
 using CaseManagement.ViewModels.CaseStatuses.Output;
+using CaseManagement.ViewModels.CaseType;
+using CaseManagement.ViewModels.QueueStatus;
 using CaseManagement.ViewModels.Tasks.Output;
+using CaseManagement.ViewModels.WaitingReason;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -31,13 +39,12 @@ namespace CaseManagement.Services.Cases
             {
                 Number = inputModel.Number,
                 Subject = inputModel.Subject,
-                Description = inputModel.Description,
-                CreatedOn = DateTime.UtcNow,
+                Notes = inputModel.Description,
+                ReportedAt = DateTime.UtcNow,
                 UserId = userId,
                 TypeId = inputModel.TypeId,
                 StatusId = inputModel.StatusId,
                 PriorityId = inputModel.PriorityId,
-                ServiceId = inputModel.ServiceId,
             };
 
             dbContext.Cases.Add(caseToAdd);
@@ -51,22 +58,65 @@ namespace CaseManagement.Services.Cases
             return saveResult;
         }
 
-        public async Task<ICollection<CasePriority>> GetAllCasePrioritiesAsync()
+        public async Task<IEnumerable<CasePriorityViewModel>> GetAllCasePrioritiesAsync()
         {
-            return await dbContext.CasePriorities.ToArrayAsync();
+            var result = await dbContext.CasePriorities
+                .Select(x => new CasePriorityViewModel
+                {
+                    Id = x.Id,
+                    CasePriorityName = x.CasePriorityName,
+                })
+                .ToArrayAsync();
+
+            return result;
         }
 
-        public async Task<AllCasesOutputModel> GetCasesAsync(
-            int skip, int take,
-            string orderBy,
-            int[] selectedStatuses, int[] selectedPriorities,
-            string userId = null)
+        public async Task<int> GetCasesCountAsync(IEnumerable<int> selectedStatuses, IEnumerable<int> selectedPriorities)
+        {
+            var result = await dbContext.Cases
+                .Where(c => selectedStatuses.Contains(c.StatusId) && selectedPriorities.Contains(c.PriorityId))
+                .CountAsync();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<CaseViewModel>> GetCasesAsync(int skip, int take,
+            IEnumerable<int> selectedStatuses, IEnumerable<int> selectedPriorities,
+            string orderBy)
+        {
+            var result = await dbContext.Cases
+                    .Where(c => selectedStatuses.Contains(c.StatusId) && selectedPriorities.Contains(c.PriorityId))
+                    .CustomCasesOrder(orderBy)
+                    .Skip(skip)
+                    .Take(take)
+                    .Select(c => new CaseViewModel
+                    {
+                        Id = c.Id,
+                        ReportedAt = c.ReportedAt,
+                        Number = c.Number,
+                        Status = c.Status.CaseStatusName,
+                        Priority = c.Priority.CasePriorityName,
+                        Subject = c.Subject,
+                        AssignedProcessor = c.AssignedProcessor,
+                        ChangedByUser = c.User == null ? null : (c.User.FullName ?? null),
+                        LastUpdatedUtc = c.LastUpdatedUtc,
+                        Notes = c.Notes,
+                        ResumeAtUtc = c.ResumeAt,
+                        WaitingReason = c.WaitingReason.WaitingReasonName,
+                    })
+                    .ToArrayAsync();
+
+            return result;
+        }
+
+        public async Task<AllCasesOutputModel> GetCasesAsync(int skip, int take, string orderBy,
+            IEnumerable<int> selectedStatuses, IEnumerable<int> selectedPriorities, string userId = null)
         {
             IQueryable<Case> query = dbContext.Cases.AsQueryable();
 
             if (userId != null)
             {
-                query = query.Where(c => c.UserId == userId || c.CaseModificationLogRecords.Any(cmlr => cmlr.UserId == userId));
+                query = query.Where(c => c.UserId == userId);
             }
 
             AllCasesOutputModel result = new AllCasesOutputModel
@@ -83,9 +133,9 @@ namespace CaseManagement.Services.Cases
                     {
                         Id = c.Id,
                         Number = c.Number,
-                        CreatedOn = c.CreatedOn,
-                        Status = c.Status.Status,
-                        Priority = c.Priority.Priority,
+                        CreatedOn = c.ReportedAt,
+                        Status = c.Status.CaseStatusName,
+                        Priority = c.Priority.CasePriorityName,
                         Subject = c.Subject,
                         Agent = c.User.Email,
                     })
@@ -94,14 +144,14 @@ namespace CaseManagement.Services.Cases
                     .Select(cp => new CaseStatusOuputModel
                     {
                         Id = cp.Id,
-                        Status = cp.Status,
+                        Status = cp.CaseStatusName,
                     })
                     .ToArrayAsync(),
                 AllAvailableCasePriorities = await dbContext.CasePriorities
                     .Select(cp => new CasePriorityOutputModel
                     {
                         Id = cp.Id,
-                        Priority = cp.Priority,
+                        Priority = cp.CasePriorityName,
                     })
                     .ToArrayAsync(),
             };
@@ -109,19 +159,35 @@ namespace CaseManagement.Services.Cases
             return result;
         }
 
-        public async Task<ICollection<Service>> GetAllCaseServicesAsync()
+        public async Task<IEnumerable<Service>> GetAllCaseServicesAsync()
         {
             return await dbContext.Services.ToArrayAsync();
         }
 
-        public async Task<ICollection<CaseStatus>> GetAllCaseStatusesAsync()
+        public async Task<IEnumerable<CaseStatusViewModel>> GetAllCaseStatusesAsync()
         {
-            return await dbContext.CaseStatuses.ToArrayAsync();
+            var result = await dbContext.CaseStatuses
+                .Select(x => new CaseStatusViewModel
+                {
+                    Id = x.Id,
+                    CaseStatusName = x.CaseStatusName,
+                })
+                .ToArrayAsync();
+
+            return result;
         }
 
-        public async Task<ICollection<CaseType>> GetAllCaseTypesAsync()
+        public async Task<IEnumerable<CaseTypeViewModel>> GetAllCaseTypesAsync()
         {
-            return await dbContext.CaseTypes.ToArrayAsync();
+            var result = await dbContext.CaseTypes
+                .Select(x => new CaseTypeViewModel
+                {
+                    Id = x.Id,
+                    CaseTypeName = x.CaseTypeName,
+                })
+                .ToArrayAsync();
+
+            return result;
         }
 
         public async Task<ViewUpdateCaseIOModel> GetCaseByIdAsync(int id, int skipTasks, int takeTasks)
@@ -131,18 +197,17 @@ namespace CaseManagement.Services.Cases
                 {
                     Id = c.Id,
                     Number = c.Number,
-                    CreatedOn = c.CreatedOn,
+                    CreatedOn = c.ReportedAt,
                     TypeId = c.Type.Id,
                     StatusId = c.Status.Id,
                     PriorityId = c.Priority.Id,
-                    PhaseId = c.Phase.Id,
-                    ServiceId = c.Service.Id,
                     Subject = c.Subject,
-                    Description = c.Description,
+                    Description = c.Notes,
                     AllTasks = c.Tasks.Count(),
                     CaseStatuses = dbContext.CaseStatuses.ToArray(),
                     CasePriorities = dbContext.CasePriorities.ToArray(),
-                    CaseTypes = dbContext.CaseTypes.ToArray(),
+                    CaseTypes = dbContext.CaseTypes.Select(x => new CaseTypeViewModel { Id = x.Id, CaseTypeName = x.CaseTypeName })
+                        .ToArray(),
                     CaseServices = dbContext.Services.ToArray(),
                 })
                 .Where(c => c.Id == id)
@@ -150,42 +215,41 @@ namespace CaseManagement.Services.Cases
 
             outputModel.Tasks = await dbContext.Tasks
                 .Where(t => t.CaseId == id)
-                .OrderByDescending(t => t.CreatedOn)
+                .OrderByDescending(t => t.ReportedAt)
                 .Skip(skipTasks)
                 .Take(takeTasks)
                 .Select(t => new TaskOutputModel
                 {
                     Id = t.Id,
-                    CreatedOn = t.CreatedOn,
-                    Action = t.Action,
-                    NextAction = t.NextAction,
-                    Type = t.Type.Type,
-                    Status = t.Status.Status,
+                    CreatedOn = t.ReportedAt,
+                    Type = t.Type.CaseTypeName,
+                    Status = t.Status.CaseStatusName,
                     Agent = t.User.Email
                 }).ToArrayAsync();
 
             return outputModel;
         }
 
-        public async Task<SearchCaseResultsOutputModel> GetCasesByNumberAsync(string caseNumber)
+        public async Task<CaseViewModel> GetCaseByNumberAsync(string caseNumber)
         {
-            SearchCaseResultsOutputModel result = new SearchCaseResultsOutputModel
-            {
-                SearchedCaseNumber = caseNumber,
-                Results = await dbContext.Cases
-                .Where(c => c.Number == caseNumber)
-                .Select(c => new CaseOutputModel
+            var result = await dbContext.Cases
+                .Where(x => x.Number == caseNumber)
+                .Select(x => new CaseViewModel
                 {
-                    Number = c.Number,
-                    Priority = c.Priority.Priority,
-                    Status = c.Status.Status,
-                    CreatedOn = c.CreatedOn,
-                    Id = c.Id,
-                    Agent = c.User.Email,
-                    Subject = c.Subject
+                    ReportedAt = x.ReportedAt,
+                    Id = x.Id,
+                    LastUpdatedUtc = x.LastUpdatedUtc,
+                    Number = x.Number,
+                    AssignedProcessor = x.AssignedProcessor,
+                    ChangedByUser = x.User == null ? null : (x.User.FullName ?? null),
+                    Notes = x.Notes,
+                    Priority = x.Priority.CasePriorityName,
+                    ResumeAtUtc = x.ResumeAt,
+                    Status = x.Status.CaseStatusName,
+                    Subject = x.Subject,
+                    WaitingReason = x.WaitingReason == null ? null : (x.WaitingReason.WaitingReasonName ?? null),
                 })
-                .ToArrayAsync()
-            };
+                .FirstOrDefaultAsync();
 
             return result;
         }
@@ -198,134 +262,132 @@ namespace CaseManagement.Services.Cases
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<int> UpdateCaseAsync(ViewUpdateCaseIOModel inputModel, string userId)
+        public async Task<int> UpdateCaseAsync(CaseTask task)
         {
-            Case caseRecordToUpdate = await dbContext.Cases
-                .FirstOrDefaultAsync(c => c.Id == inputModel.Id);
+            int result = new int();
 
-            List<FieldModification> fieldModifications = new List<FieldModification>();
+            var caseRecordToUpdate = await dbContext.Cases
+                .FirstOrDefaultAsync(c => c.Id == task.CaseId);
 
-            if (caseRecordToUpdate.Number != inputModel.Number)
+            if (caseRecordToUpdate != null)
             {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Number",
-                    OldValue = caseRecordToUpdate.Number,
-                    NewValue = inputModel.Number,
-                });
+                caseRecordToUpdate.PriorityId = task.PriorityId;
+                caseRecordToUpdate.Subject = task.Subject;
+                caseRecordToUpdate.StatusId = task.StatusId;
+                caseRecordToUpdate.WaitingReasonId = task.WaitingReasonId;
+                caseRecordToUpdate.TypeId = task.TypeId;
+                caseRecordToUpdate.Queue = task.Queue;
+                caseRecordToUpdate.QueueStatusId = task.QueueStatusId;
+                caseRecordToUpdate.LastUpdatedUtc = task.LastUpdatedUtc;
+                caseRecordToUpdate.ResumeAt = task.ResumeAt;
+                caseRecordToUpdate.AssignedProcessor = task.AssignedProcessor;
+                caseRecordToUpdate.UserId = task.UserId;
+                caseRecordToUpdate.Notes = task.Notes;
+
+                dbContext.Cases.Update(caseRecordToUpdate);
+                result = await dbContext.SaveChangesAsync();
             }
 
-            if (caseRecordToUpdate.Description != inputModel.Description)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Description",
-                    OldValue = caseRecordToUpdate.Description,
-                    NewValue = inputModel.Description,
-                });
-            }
-
-            if (caseRecordToUpdate.Subject != inputModel.Subject)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Subject",
-                    OldValue = caseRecordToUpdate.Subject,
-                    NewValue = inputModel.Subject,
-                });
-            }
-
-            if (caseRecordToUpdate.StatusId != inputModel.StatusId)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Status",
-                    OldValue = await dbContext.CaseStatuses.Where(cs => cs.Id == caseRecordToUpdate.StatusId).Select(cs => cs.Status).FirstOrDefaultAsync(),
-                    NewValue = await dbContext.CaseStatuses.Where(cs => cs.Id == inputModel.StatusId).Select(cs => cs.Status).FirstOrDefaultAsync(),
-                });
-            }
-
-            if (caseRecordToUpdate.TypeId != inputModel.TypeId)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Type",
-                    OldValue = await dbContext.CaseTypes.Where(ct => ct.Id == caseRecordToUpdate.TypeId).Select(ct => ct.Type).FirstOrDefaultAsync(),
-                    NewValue = await dbContext.CaseTypes.Where(ct => ct.Id == inputModel.TypeId).Select(ct => ct.Type).FirstOrDefaultAsync(),
-                });
-            }
-
-            if (caseRecordToUpdate.PriorityId != inputModel.PriorityId)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Priority",
-                    OldValue = await dbContext.CasePriorities.Where(cp => cp.Id == caseRecordToUpdate.PriorityId).Select(cp => cp.Priority).FirstOrDefaultAsync(),
-                    NewValue = await dbContext.CasePriorities.Where(cp => cp.Id == inputModel.PriorityId).Select(cp => cp.Priority).FirstOrDefaultAsync(),
-                });
-            }
-
-            if (caseRecordToUpdate.PhaseId != inputModel.PhaseId)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Phase",
-                    OldValue = await dbContext.CasePhases.Where(cp => cp.Id == caseRecordToUpdate.PhaseId).Select(cp => cp.Phase).FirstOrDefaultAsync(),
-                    NewValue = await dbContext.CasePhases.Where(cp => cp.Id == inputModel.PhaseId).Select(cp => cp.Phase).FirstOrDefaultAsync(),
-                });
-            }
-
-            if (caseRecordToUpdate.ServiceId != inputModel.ServiceId)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Service",
-                    OldValue = await dbContext.Services.Where(s => s.Id == caseRecordToUpdate.ServiceId).Select(s => s.ServiceName).FirstOrDefaultAsync(),
-                    NewValue = await dbContext.Services.Where(s => s.Id == inputModel.ServiceId).Select(s => s.ServiceName).FirstOrDefaultAsync(),
-                });
-            }
-
-            caseRecordToUpdate.Number = inputModel.Number;
-            caseRecordToUpdate.Description = inputModel.Description;
-            caseRecordToUpdate.Subject = inputModel.Subject;
-            caseRecordToUpdate.LastModified = DateTime.UtcNow;
-            caseRecordToUpdate.StatusId = inputModel.StatusId;
-            caseRecordToUpdate.TypeId = inputModel.TypeId;
-            caseRecordToUpdate.PriorityId = inputModel.PriorityId;
-            caseRecordToUpdate.PhaseId = inputModel.PhaseId;
-            caseRecordToUpdate.ServiceId = inputModel.ServiceId;
-
-            if (fieldModifications.Count > 0)
-            {
-                CaseModificationLogRecord modificationLogRecord = new CaseModificationLogRecord
-                {
-                    ModificationTime = DateTime.UtcNow,
-                    UserId = userId,
-                    CaseId = caseRecordToUpdate.Id,
-                    ModifiedFields = fieldModifications,
-                };
-
-                dbContext.CaseModificationLogRecords.Add(modificationLogRecord);
-            }
-
-            dbContext.Cases.Update(caseRecordToUpdate);
-            int saveResult = await dbContext.SaveChangesAsync();
-
-            return saveResult;
+            return result;
         }
 
-        public async Task<int[]> GetAllCaseStatusesIdsAsync()
+        public async Task<IEnumerable<int>> GetAllCaseStatusesIdsAsync()
         {
             return await dbContext.CaseStatuses
                 .Select(cs => cs.Id)
                 .ToArrayAsync();
         }
 
-        public async Task<int[]> GetAllCasePrioritiesIdsAsync()
+        public async Task<IEnumerable<int>> GetAllCasePrioritiesIdsAsync()
         {
             return await dbContext.CasePriorities
                 .Select(cp => cp.Id)
                 .ToArrayAsync();
+        }
+
+        public async Task<CaseViewUpdateViewModel> GetCaseByIdAsync(int id)
+        {
+            var result = await dbContext.Cases
+                .Where(x => x.Id == id)
+                .Select(x => new CaseViewUpdateViewModel
+                {
+                    Id = x.Id,
+                    AssignedProcessor = x.AssignedProcessor,
+                    ChangedByUser = x.User == null ? null : (x.User.FullName ?? null),
+                    Notes = x.Notes,
+                    Number = x.Number,
+                    Priority = x.Priority.CasePriorityName,
+                    Queue = x.Queue,
+                    QueueStatus = x.QueueStatus == null ? null : (x.QueueStatus.QueueStatusName ?? null),
+                    ReportedAtUtc = x.ReportedAt,
+                    ResumeAt = x.ResumeAt,
+                    Status = x.Status.CaseStatusName,
+                    Subject = x.Subject,
+                    Type = x.Type.CaseTypeName,
+                    UpdatedAtUtc = x.LastUpdatedUtc,
+                    WaitingReason = x.WaitingReason == null ? null : (x.WaitingReason.WaitingReasonName ?? null),
+                    Tasks = x.Tasks
+                        .OrderByDescending(x => x.LastUpdatedUtc)
+                        .Select(x => new TaskViewModel
+                        {
+                            AssignedProcessor = x.AssignedProcessor,
+                            ChangedByUser = x.User == null ? null : (x.User.FullName ?? null),
+                            Notes = x.Notes,
+                            CaseNumber = x.Case.Number,
+                            CasePriority = x.Priority.CasePriorityName,
+                            CaseStatus = x.Status.CaseStatusName,
+                            Subject = x.Subject,
+                            WaitingReason = x.WaitingReason == null ? null : (x.WaitingReason.WaitingReasonName ?? null),
+                            LastUpdatedUtc = x.LastUpdatedUtc,
+                            ResumeAtUtc = x.ResumeAt,
+                        })
+                        .ToArray()
+                })
+                .FirstOrDefaultAsync();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<QueueStatusViewModel>> GetAllQueueStatusesAsync()
+        {
+            var result = await dbContext.QueueStatuses
+                .Select(x => new QueueStatusViewModel
+                {
+                    Id = x.Id,
+                    QueueStatusName = x.QueueStatusName,
+                })
+                .ToArrayAsync();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<WaitingReasonViewModel>> GetAllWaitingReasonsAsync()
+        {
+            var result = await dbContext.WaitingReasons
+                .Select(x => new WaitingReasonViewModel
+                {
+                    Id = x.Id,
+                    WaitingReasonName = x.WaitingReasonName,
+                })
+                .ToArrayAsync();
+
+            return result;
+        }
+
+        public async Task<DateTime> GetCaseReportedAtAsync(int caseId)
+        {
+            var result = await dbContext.Cases
+                .Where(x => x.Id == caseId).Select(x => x.ReportedAt).FirstOrDefaultAsync();
+
+            return result;
+        }
+
+        public async Task<string> GetCaseNumberAsync(int caseId)
+        {
+            var result = await dbContext.Cases
+                .Where(x => x.Id == caseId).Select(x => x.Number).FirstOrDefaultAsync();
+
+            return result;
         }
     }
 }

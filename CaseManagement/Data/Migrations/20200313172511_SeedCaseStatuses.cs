@@ -13,11 +13,9 @@ namespace CaseManagement.Data.Migrations
                 {
                     "New",
                     "Waiting",
-                    "In Process",
+                    "In process",
                     "Resolved",
-                    "On-hold",
                     "Closed",
-                    "Other",
                 });
         }
 
@@ -30,11 +28,9 @@ namespace CaseManagement.Data.Migrations
                 {
                     "New",
                     "Waiting",
-                    "In Process",
+                    "In process",
                     "Resolved",
-                    "On-hold",
                     "Closed",
-                    "Other",
                 });
         }
     }

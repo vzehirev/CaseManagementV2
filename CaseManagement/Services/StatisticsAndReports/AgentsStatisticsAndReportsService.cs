@@ -28,102 +28,102 @@ namespace CaseManagement.Services.StatisticsAndReports
                 {
                     CreatedCasesLowPriority = u.Cases
                         .Count(c => c.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "low").Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate),
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "low").Id
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate),
 
                     CreatedCasesNormalPriority = u.Cases
                         .Count(c => c.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "normal").Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate),
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "normal").Id
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate),
 
                     CreatedCasesUrgentPriority = u.Cases
                         .Count(c => c.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "urgent").Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate),
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "urgent").Id
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate),
 
                     CreatedCasesImmediatePriority = u.Cases
                         .Count(c => c.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "immediate").Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate),
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "immediate").Id
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate),
 
                     CreatedCasesNaPriority = u.Cases
                         .Count(c => c.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "n/a").Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate),
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "n/a").Id
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate),
 
                     UpdatedCasesLowPriority = u.ModifiedCases
                         .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "low").Id
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "low").Id
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     UpdatedCasesNormalPriority = u.ModifiedCases
                         .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "normal").Id
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "normal").Id
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     UpdatedCasesUrgentPriority = u.ModifiedCases
                         .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "urgent").Id
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "urgent").Id
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     UpdatedCasesImmediatePriority = u.ModifiedCases
                         .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "immediate").Id
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "immediate").Id
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     UpdatedCasesNaPriority = u.ModifiedCases
                         .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities
-                        .FirstOrDefault(x => x.Priority.ToLower() == "n/a").Id
+                        .FirstOrDefault(x => x.CasePriorityName.ToLower() == "n/a").Id
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     ClosedCasesLowPriority = u.ModifiedCases
-                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.Priority.ToLower() == "low").Id
-                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id)
+                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.CasePriorityName.ToLower() == "low").Id
+                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id)
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     ClosedCasesNormalPriority = u.ModifiedCases
-                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.Priority.ToLower() == "normal").Id
-                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id)
+                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.CasePriorityName.ToLower() == "normal").Id
+                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id)
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     ClosedCasesUrgentPriority = u.ModifiedCases
-                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.Priority.ToLower() == "urgent").Id
-                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id)
+                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.CasePriorityName.ToLower() == "urgent").Id
+                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id)
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     ClosedCasesImmediatePriority = u.ModifiedCases
-                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.Priority.ToLower() == "immediate").Id
-                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id)
+                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.CasePriorityName.ToLower() == "immediate").Id
+                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id)
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     ClosedCasesNaPriority = u.ModifiedCases
-                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.Priority.ToLower() == "n/a").Id
-                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id)
+                        .Count(x => x.Case.PriorityId == this.dbContext.CasePriorities.FirstOrDefault(x => x.CasePriorityName.ToLower() == "n/a").Id
+                            && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                                || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id)
                             && x.ModificationTime >= fromDate
                             && x.ModificationTime <= toDate),
 
                     CreatedTasks = u.Tasks
-                        .Count(t => t.CreatedOn.Date >= fromDate
-                            && t.CreatedOn <= toDate),
+                        .Count(t => t.ReportedAt.Date >= fromDate
+                            && t.ReportedAt <= toDate),
 
                     UpdatedTasks = u.ModifiedTasks
                         .Count(x => x.ModificationTime >= fromDate
@@ -158,7 +158,7 @@ namespace CaseManagement.Services.StatisticsAndReports
                     FullName = string.Join(' ', u.FirstName, u.LastName),
 
                     CreatedCases = this.dbContext.Cases
-                        .Count(c => c.UserId == u.Id && c.CreatedOn >= fromDate && c.CreatedOn <= toDate),
+                        .Count(c => c.UserId == u.Id && c.ReportedAt >= fromDate && c.ReportedAt <= toDate),
 
                     UpdatedCases = this.dbContext.CaseModificationLogRecords
                         .Where(x => x.UserId == u.Id && x.ModificationTime >= fromDate && x.ModificationTime <= toDate)
@@ -168,53 +168,53 @@ namespace CaseManagement.Services.StatisticsAndReports
 
                     OpenCases = this.dbContext.Cases
                         .Count(c => c.UserId == u.Id
-                            && c.CreatedOn >= fromDate
-                            && c.CreatedOn <= toDate
-                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id
-                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id
-                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "other").Id
-                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "n/a").Id),
+                            && c.ReportedAt >= fromDate
+                            && c.ReportedAt <= toDate
+                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id
+                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id
+                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "other").Id
+                            && c.StatusId != this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "n/a").Id),
 
                     ClosedCases = this.dbContext.Cases
                             .Count(c => c.UserId == u.Id
-                                && c.CreatedOn >= fromDate
-                                && c.CreatedOn <= toDate
-                                && (c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id
-                                    || c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id)
-                                && c.LastModified == null)
+                                && c.ReportedAt >= fromDate
+                                && c.ReportedAt <= toDate
+                                && (c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id
+                                    || c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id)
+                                && c.LastUpdatedUtc == null)
                         + this.dbContext.CaseModificationLogRecords
                             .Where(x => x.UserId == u.Id
                                 && x.ModificationTime >= fromDate
                                 && x.ModificationTime <= toDate
                                 && x.ModifiedFields.Any(x => x.FieldName.ToLower() == "status"
                                 && (x.NewValue.ToLower() == "resolved" || x.NewValue.ToLower() == "closed"))
-                                && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "resolved").Id
-                                    || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "closed").Id))
+                                && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "resolved").Id
+                                    || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "closed").Id))
                             .Select(x => x.CaseId)
                             .Distinct()
                             .Count(),
 
                     OtherCasesStatus = this.dbContext.Cases
                             .Count(c => c.UserId == u.Id
-                                && c.CreatedOn >= fromDate
-                                && c.CreatedOn <= toDate
-                                && (c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "other").Id
-                                    || c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "n/a").Id)
-                                && c.LastModified == null)
+                                && c.ReportedAt >= fromDate
+                                && c.ReportedAt <= toDate
+                                && (c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "other").Id
+                                    || c.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "n/a").Id)
+                                && c.LastUpdatedUtc == null)
                         + this.dbContext.CaseModificationLogRecords
                             .Where(x => x.UserId == u.Id
                                 && x.ModificationTime >= fromDate
                                 && x.ModificationTime <= toDate
                                 && x.ModifiedFields.Any(x => x.FieldName.ToLower() == "status"
                                 && (x.NewValue.ToLower() == "other" || x.NewValue.ToLower() == "n/a"))
-                                && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "other").Id
-                                    || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.Status.ToLower() == "n/a").Id))
+                                && (x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "other").Id
+                                    || x.Case.StatusId == this.dbContext.CaseStatuses.FirstOrDefault(x => x.CaseStatusName.ToLower() == "n/a").Id))
                             .Select(x => x.CaseId)
                             .Distinct()
                             .Count(),
 
                     CreatedTasks = this.dbContext.Tasks
-                        .Count(t => t.UserId == u.Id && t.CreatedOn >= fromDate && t.CreatedOn <= toDate),
+                        .Count(t => t.UserId == u.Id && t.ReportedAt >= fromDate && t.ReportedAt <= toDate),
 
                     UpdatedTasks = this.dbContext.TaskModificationLogRecords
                         .Where(x => x.UserId == u.Id && x.ModificationTime >= fromDate && x.ModificationTime <= toDate)
@@ -224,18 +224,18 @@ namespace CaseManagement.Services.StatisticsAndReports
 
                     OpenTasks = this.dbContext.Tasks
                         .Count(t => t.UserId == u.Id
-                            && t.CreatedOn >= fromDate
-                            && t.CreatedOn <= toDate
+                            && t.ReportedAt >= fromDate
+                            && t.ReportedAt <= toDate
                             && t.StatusId != this.dbContext.TaskStatuses.FirstOrDefault(x => x.Status.ToLower() == "completed").Id
                             && t.StatusId != this.dbContext.TaskStatuses.FirstOrDefault(x => x.Status.ToLower() == "failed").Id),
 
                     ClosedTasks = this.dbContext.Tasks
                             .Count(t => t.UserId == u.Id
-                                && t.CreatedOn >= fromDate
-                                && t.CreatedOn <= toDate
+                                && t.ReportedAt >= fromDate
+                                && t.ReportedAt <= toDate
                                 && (t.StatusId == this.dbContext.TaskStatuses.FirstOrDefault(x => x.Status.ToLower() == "completed").Id
                                     || t.StatusId == this.dbContext.TaskStatuses.FirstOrDefault(x => x.Status.ToLower() == "failed").Id)
-                                && t.LastModified == null)
+                                && t.LastUpdatedUtc == null)
                         + this.dbContext.TaskModificationLogRecords
                             .Where(x => x.UserId == u.Id
                                 && x.ModificationTime >= fromDate
@@ -250,17 +250,15 @@ namespace CaseManagement.Services.StatisticsAndReports
 
                     OtherTasksStatus = this.dbContext.Tasks
                             .Count(t => t.UserId == u.Id
-                                && t.CreatedOn >= fromDate
-                                && t.CreatedOn <= toDate
-                                && t.StatusId == null
-                                && t.LastModified == null)
+                                && t.ReportedAt >= fromDate
+                                && t.ReportedAt <= toDate
+                                && t.LastUpdatedUtc == null)
                         + this.dbContext.TaskModificationLogRecords
                             .Where(x => x.UserId == u.Id
                                 && x.ModificationTime >= fromDate
                                 && x.ModificationTime <= toDate
                                 && x.ModifiedFields.Any(x => x.FieldName.ToLower() == "status"
-                                && x.NewValue == null)
-                                && x.Task.StatusId == null)
+                                && x.NewValue == null))
                             .Select(x => x.TaskId)
                             .Distinct()
                             .Count(),

@@ -28,8 +28,7 @@ namespace CaseManagement.Models.DCMOpsMonitoringTable
 
         public string Notes { get; set; }
 
-        [Required]
-        public DateTime UpdatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
         public string TicketType { get; set; }
 
@@ -61,7 +60,7 @@ namespace CaseManagement.Models.DCMOpsMonitoringTable
         {
             get
             {
-                var nowInIST = DateTime.UtcNow.AddHours(5).AddMinutes(30);
+                var nowInIST = DateTime.UtcNow.AddHours(GlobalConstants.IstHoursOffsetFromUtc).AddMinutes(GlobalConstants.IstMinutesOffsetFromUtc);
                 return ((TimeSpan)(nowInIST - UploadTimeIST)).Minutes;
             }
         }

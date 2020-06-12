@@ -1,4 +1,4 @@
-﻿@model CaseManagement.ViewModels.Cases.ViewUpdateCaseIOModel
+﻿@model CaseManagement.ViewModels.Cases.ViewUpdate.CaseViewUpdateViewModel
 
 <div class="row mt-5">
     <div class="col-12 mx-auto text-center">
@@ -6,16 +6,6 @@
             <div class="col-4 mx-auto text-center">
                 <h4>Case: @Model.Number</h4>
                 <hr />
-
-                @*Set in Cases controller's Create action with post method in case of successfull case creation*@
-                @if (this.TempData["CaseCreatedSuccesffully"] as bool? == true)
-                {
-                    <div class="alert alert-dismissible alert-success">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Case created successfully.</strong>
-                    </div>
-                }
-
                 @*Set in Cases controller's Update action with post method in case of successfull case update*@
                 @if (this.TempData["CaseUpdatedSuccessfully"] as bool? == true)
                 {
@@ -24,121 +14,69 @@
                         <strong>Case updated successfully.</strong>
                     </div>
                 }
-
             </div>
-            <form asp-action="Update" method="post">
-                <input type="hidden" asp-for="Id" />
-                <div class="row">
-                    <div class="form-group col-4">
-                        <fieldset disabled="">
-                            <label class="control-label" for="disabledInput">Created on</label>
-                            <input class="form-control" id="disabledInput" type="text" value="@Model.CreatedOn" disabled="">
-                        </fieldset>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Case number*</label>
-                        <input asp-for="Number" placeholder="Required field" class="form-control" />
-                        <span asp-validation-for="Number" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Status</label>
-                        <select asp-for="StatusId" class="form-control">
-
-                            @foreach (var status in Model.CaseStatuses)
-                            {
-                                if (Model.StatusId == status.Id)
-                                {
-                                    <option value="@status.Id" selected>@status.Status</option>
-                                }
-                                else
-                                {
-                                    <option value="@status.Id">@status.Status</option>
-                                }
-                            }
-
-                        </select>
-                        <span asp-validation-for="StatusId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Priority</label>
-                        <select asp-for="PriorityId" class="form-control">
-
-                            @foreach (var priority in Model.CasePriorities)
-                            {
-                                if (Model.PriorityId == priority.Id)
-                                {
-                                    <option value="@priority.Id" selected>@priority.Priority</option>
-                                }
-                                else
-                                {
-                                    <option value="@priority.Id">@priority.Priority</option>
-                                }
-                            }
-
-                        </select>
-                        <span asp-validation-for="PriorityId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Subject*</label>
-                        <input asp-for="Subject" type="text" placeholder="Required field" class="form-control" />
-                        <span asp-validation-for="Subject" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Type</label>
-                        <select asp-for="TypeId" class="form-control">
-
-                            @if (Model.TypeId == null)
-                            {
-                                <option value="">Select type</option>
-                            }
-
-                            @foreach (var type in Model.CaseTypes)
-                            {
-                                if (Model.TypeId == type.Id)
-                                {
-                                    <option value="@type.Id" selected>@type.Type</option>
-                                }
-                                else
-                                {
-                                    <option value="@type.Id">@type.Type</option>
-                                }
-                            }
-
-                        </select>
-                        <span asp-validation-for="TypeId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Service</label>
-                        <select asp-for="ServiceId" class="form-control">
-
-                            @if (Model.ServiceId == null)
-                            {
-                                <option value="">Select service</option>
-                            }
-
-                            @foreach (var service in Model.CaseServices)
-                            {
-                                if (Model.ServiceId == service.Id)
-                                {
-                                    <option value="@service.Id" selected>@service.ServiceName</option>
-                                }
-                                else
-                                {
-                                    <option value="@service.Id">@service.ServiceName</option>
-                                }
-                            }
-
-                        </select>
-                        <span asp-validation-for="ServiceId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-4">
-                        <label>Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="11"></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
+            <div class="row">
+                <div class="form-group col-3">
+                    <label>Case number</label>
+                    <input asp-for="@Model.Number" class="form-control" disabled />
                 </div>
-                <button type="submit" class="btn btn-outline-dark">UPDATE</button>
-            </form>
+                <div class="form-group col-3">
+                    <label>Priority</label>
+                    <input asp-for="@Model.Priority" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Subject</label>
+                    <input asp-for="@Model.Subject" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Status</label>
+                    <input asp-for="@Model.Status" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Waiting reason</label>
+                    <input asp-for="@Model.WaitingReason" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Type</label>
+                    <input asp-for="@Model.Type" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Queue</label>
+                    <input asp-for="@Model.Queue" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Queue status</label>
+                    <input asp-for="@Model.QueueStatus" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Reported at (UTC)</label>
+                    <input asp-for="@Model.ReportedAtUtc" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Updated at (UTC)</label>
+                    <input asp-for="@Model.UpdatedAtUtc" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Updated at (IST)</label>
+                    <input asp-for="@Model.UpdatedAtIst" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Resume at</label>
+                    <input asp-for="@Model.ResumeAt" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Assigned</label>
+                    <input asp-for="@Model.AssignedProcessor" class="form-control" disabled />
+                </div>
+                <div class="form-group col-3">
+                    <label>Changed by</label>
+                    <input asp-for="@Model.ChangedByUser" class="form-control" disabled />
+                </div>
+                <div class="form-group col-6">
+                    <label>Notes</label>
+                    <textarea asp-for="@Model.Notes" class="form-control" rows="9" disabled></textarea>
+                </div>
+            </div>
         </section>
     </div>
 </div>
@@ -147,7 +85,6 @@
     <section>
         <h4>Tasks</h4>
         <hr />
-
         @*Set in Tasks controller's Create action with post method in case of successfull task creation*@
         @if (this.TempData["TaskCreatedSuccessfully"] as bool? == true)
         {
@@ -156,17 +93,7 @@
                 <strong>Task created successfully.</strong>
             </div>
         }
-
-        @*Set in Tasks controller's Update action with post method in case of successfull task update*@
-        @if (this.TempData["TaskUpdatedSuccessfully"] as bool? == true)
-        {
-            <div class="alert alert-dismissible alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <strong>Task updated successfully.</strong>
-            </div>
-        }
-
-        <a class="btn btn-info" asp-controller="Tasks" asp-action="Create" asp-route-id="@Model.Id">Create Task</a>
+        <a class="btn btn-info" asp-controller="Tasks" asp-action="Create" asp-route-caseId="@Model.Id">ADD TASK</a>
     </section>
 </div>
 
@@ -174,103 +101,54 @@
     <table class="table table-hover border">
         <thead>
             <tr class="table-active">
-                <th scope="col">Created on</th>
-                <th scope="col">Action</th>
-                <th scope="col">Next action</th>
-                <th scope="col">Status</th>
-                <th scope="col">Agent</th>
-                <th scope="col"></th>
+                <th scope="col">Last updated (UTC)<img class="order-by-icon pl-1" src="/img/arrow-down.png"></th>
+                <th scope="col">Last updated (IST)</th>
+                <th scope="col">Case number</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Case status</th>
+                <th scope="col">Case priority</th>
+                <th scope="col">Waiting reason</th>
+                <th scope="col">Processor</th>
+                <th scope="col">Changed by</th>
+                <th scope="col">Resume at (UTC)</th>
+                <th scope="col">Notes</th>
             </tr>
         </thead>
         <tbody>
-
             @foreach (var taskModel in Model.Tasks)
             {
                 <tr>
-                    <td>@taskModel.CreatedOn</td>
-                    <td>@taskModel.Action</td>
-                    <td>@taskModel.NextAction</td>
-                    <td>@taskModel.Status</td>
-                    <td>@taskModel.Agent</td>
-                    <td><a class="btn btn-warning p-1" asp-controller="Tasks" asp-action="ViewUpdate" asp-route-id="@taskModel.Id">VIEW/UPDATE</a></td>
+                    <td>@taskModel.LastUpdatedUtc</td>
+                    <td>@taskModel.LastUpdatedIst</td>
+                    <td>@taskModel.CaseNumber</td>
+                    <td>@taskModel.Subject</td>
+                    <td>@taskModel.CaseStatus</td>
+                    <td>@taskModel.CasePriority</td>
+                    <td>@taskModel.WaitingReason</td>
+                    <td>@taskModel.AssignedProcessor</td>
+                    <td>@taskModel.ChangedByUser</td>
+                    <td>@taskModel.ResumeAtUtc</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(taskModel.Notes))
+                        {
+                            <button type="button" class="btn btn-link btn-sm" data-container="body" data-toggle="popover" data-placement="left" data-content="@taskModel.Notes">See notes</button>
+                        }
+                    </td>
                 </tr>
             }
-
         </tbody>
     </table>
-
-    @if (Model.Tasks.Length == 0)
+    @if (Model.Tasks.Count() == 0)
     {
         <h6>No tasks available.</h6>
     }
-
-</div>
-
-@* pagination *@
-
-<div>
-    <ul class="pagination justify-content-center">
-
-        @if (Model.CurrentTasksPage == 1)
-        {
-            <li class="page-item disabled">
-                <a class="page-link" href="#">&laquo;</a>
-            </li>
-        }
-        else if (Model.CurrentTasksPage > 1)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-route-id="@Model.Id" asp-route-page="1" asp-fragment="tasks-table">&laquo;</a>
-            </li>
-        }
-
-        @{
-
-            // -5 and +5 so it can show 5 pages before and 5 pages ahead (if available) of the current one
-            int firstPageToShow = Model.CurrentTasksPage - 5 < 1 ? 1 : Model.CurrentTasksPage - 5;
-            int lastPageToShow = Model.CurrentTasksPage + 5 > Model.LastTasksPage ? Model.LastTasksPage : Model.CurrentTasksPage + 5;
-
-            for (int i = firstPageToShow; i <= lastPageToShow; i++)
-            {
-                if (i < 1)
-                {
-                    continue;
-                }
-                if (i > Model.LastTasksPage)
-                {
-                    break;
-                }
-                if (Model.CurrentTasksPage == i)
-                {
-                    <li class="page-item active">
-                        <a class="page-link" href="#tasks-table">@i</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-route-id="@Model.Id" asp-route-page="@i" asp-fragment="tasks-table">@i</a>
-                    </li>
-                }
-            }
-        }
-
-        @if (Model.CurrentTasksPage < Model.LastTasksPage)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-route-id="@Model.Id" asp-route-page="@Model.LastTasksPage" asp-fragment="tasks-table">&raquo;</a>
-            </li>
-        }
-        else if (Model.AllTasks > 0)
-        {
-            <li class="page-item disabled">
-                <a class="page-link" href="">&raquo;</a>
-            </li>
-        }
-
-    </ul>
 </div>
 
 @section Scripts {
+    <partial name="PopoverHandlerJsPartial" />
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        handlePopover();
+    </script>
 }
+

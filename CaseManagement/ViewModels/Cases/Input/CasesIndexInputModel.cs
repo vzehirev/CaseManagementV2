@@ -1,4 +1,7 @@
-﻿namespace CaseManagement.ViewModels.Cases.Input
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace CaseManagement.ViewModels.Cases.Input
 {
     public class CasesIndexInputModel
     {
@@ -6,8 +9,8 @@
 
         public string OrderBy { get; set; }
 
-        public int[] SelectedStatuses { get; set; }
+        public IEnumerable<int> SelectedStatuses { get; set; }
 
-        public int[] SelectedPriorities { get; set; }
+        public IEnumerable<int> SelectedPriorities { get; set; }
     }
 }

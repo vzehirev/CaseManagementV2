@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaseManagement.Models
 {
@@ -16,6 +17,15 @@ namespace CaseManagement.Models
         public string LastName { get; set; }
 
         public DateTime LastActivity { get; set; }
+
+        [NotMapped]
+        public string FullName
+        {
+            get
+            {
+                return string.Join(' ', FirstName, LastName);
+            }
+        }
 
         public virtual ICollection<Case> Cases { get; set; } = new HashSet<Case>();
 

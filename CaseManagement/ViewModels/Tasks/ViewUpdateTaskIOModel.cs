@@ -16,9 +16,9 @@ namespace CaseManagement.ViewModels.Tasks
         [Display(Name = "Task Next action")]
         public string NextAction { get; set; }
 
-        public int? StatusId { get; set; }
+        public int StatusId { get; set; }
 
-        public int? TypeId { get; set; }
+        public int TypeId { get; set; }
 
         public string Comments { get; set; }
 

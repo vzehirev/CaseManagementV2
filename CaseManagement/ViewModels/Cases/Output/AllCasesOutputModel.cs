@@ -1,5 +1,7 @@
 ﻿using CaseManagement.ViewModels.CasePriorities.Output;
 using CaseManagement.ViewModels.CaseStatuses.Output;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CaseManagement.ViewModels.Cases.Output
 {
@@ -19,9 +21,9 @@ namespace CaseManagement.ViewModels.Cases.Output
 
         public CaseStatusOuputModel[] AllAvailableCaseStatuses { get; set; }
 
-        public int[] SelectedStatuses { get; set; }
+        public IEnumerable<int> SelectedStatuses { get; set; }
 
-        public int[] SelectedPriorities { get; set; }
+        public IEnumerable<int> SelectedPriorities { get; set; }
 
         public CasePriorityOutputModel[] AllAvailableCasePriorities { get; set; }
     }

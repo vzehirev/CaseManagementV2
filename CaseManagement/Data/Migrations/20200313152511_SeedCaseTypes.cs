@@ -11,15 +11,8 @@ namespace CaseManagement.Data.Migrations
                 column: "Type",
                 values: new object[]
                 {
-                    "DCM Regional Tickets",
-                    "Server Maintenance Break and Fix (B+F) ",
-                    "Time Critical Requests (Incident)",
-                    "Time Critical Requests (Requests)",
-                    "Requesting DC access",
-                    "Requesting Goods Delivery to DCs",
-                    "Requesting the announcement of System News",
-                    "Requesting different kinds of onsite support activities",
-                    "Other",
+                    "Incident",
+                    "Service request",
                 });
         }
 
@@ -30,15 +23,8 @@ namespace CaseManagement.Data.Migrations
                 keyColumn: "Type",
                 keyValues: new object[]
                 {
-                    "DCM Regional Tickets",
-                    "Server Maintenance Break and Fix (B+F) ",
-                    "Time Critical Requests (Incident)",
-                    "Time Critical Requests (Requests)",
-                    "Requesting DC access",
-                    "Requesting Goods Delivery to DCs",
-                    "Requesting the announcement of System News",
-                    "Requesting different kinds of onsite support activities",
-                    "Other",
+                    "Incident",
+                    "Service request",
                 });
         }
     }

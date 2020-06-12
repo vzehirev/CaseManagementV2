@@ -25,8 +25,8 @@ namespace CaseManagement.Services
 
             string[] possibleOrders = new[]
             {
-                "CreatedOn-desc",
-                "CreatedOn-asc",
+                "ReportedAt-desc",
+                "ReportedAt-asc",
                 "Status-desc",
                 "Status-asc",
                 "Priority-desc",

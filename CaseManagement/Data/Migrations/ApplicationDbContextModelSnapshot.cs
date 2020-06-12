@@ -127,62 +127,65 @@ namespace CaseManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("AssignedProcessor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("EndTime")
+                    b.Property<DateTime?>("LastUpdatedUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PhaseId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PriorityId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ServiceAreaId")
+                    b.Property<string>("Queue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QueueStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ServiceId")
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ResumeAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SNo")
                         .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.Property<string>("Subject")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TypeId")
+                    b.Property<int>("TypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("WaitingReasonId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("PhaseId");
+                    b.HasKey("Id");
 
                     b.HasIndex("PriorityId");
 
-                    b.HasIndex("ServiceAreaId");
-
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("QueueStatusId");
 
                     b.HasIndex("StatusId");
 
                     b.HasIndex("TypeId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("WaitingReasonId");
 
                     b.ToTable("Cases");
                 });
@@ -235,7 +238,8 @@ namespace CaseManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Priority")
+                    b.Property<string>("CasePriorityName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -250,7 +254,8 @@ namespace CaseManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Status")
+                    b.Property<string>("CaseStatusName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -265,12 +270,29 @@ namespace CaseManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Type")
+                    b.Property<string>("CaseTypeName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("CaseTypes");
+                });
+
+            modelBuilder.Entity("CaseManagement.Models.CaseModels.QueueStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("QueueStatusName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QueueStatuses");
                 });
 
             modelBuilder.Entity("CaseManagement.Models.CaseModels.Service", b =>
@@ -301,6 +323,22 @@ namespace CaseManagement.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ServiceAreas");
+                });
+
+            modelBuilder.Entity("CaseManagement.Models.CaseModels.WaitingReason", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("WaitingReasonName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WaitingReasons");
                 });
 
             modelBuilder.Entity("CaseManagement.Models.DCMOpsMonitoringTable.DCMOpsMonitoringRow", b =>
@@ -352,7 +390,7 @@ namespace CaseManagement.Data.Migrations
                     b.Property<string>("TicketType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UploadTimeIST")
@@ -446,6 +484,25 @@ namespace CaseManagement.Data.Migrations
                     b.ToTable("Vendors");
                 });
 
+            modelBuilder.Entity("CaseManagement.Models.DcmOpsMonitoringTableProcessorError", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("DateAndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DcmOpsMonitoringTableProcessorErrors");
+                });
+
             modelBuilder.Entity("CaseManagement.Models.FieldModification", b =>
                 {
                     b.Property<int>("Id")
@@ -485,47 +542,63 @@ namespace CaseManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Action")
-                        .IsRequired()
+                    b.Property<string>("AssignedProcessor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CaseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Comments")
+                    b.Property<DateTime?>("LastUpdatedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("NextAction")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StatusId")
+                    b.Property<int>("PriorityId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TypeId")
+                    b.Property<string>("Queue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QueueStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReportedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ResumeAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("WaitingReasonId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CaseId");
+
+                    b.HasIndex("PriorityId");
+
+                    b.HasIndex("QueueStatusId");
 
                     b.HasIndex("StatusId");
 
                     b.HasIndex("TypeId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("WaitingReasonId");
 
                     b.ToTable("Tasks");
                 });
@@ -742,57 +815,58 @@ namespace CaseManagement.Data.Migrations
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("CaseManagement.Models.CaseModels.Case", b =>
                 {
-                    b.HasOne("CaseManagement.Models.CaseModels.CasePhase", "Phase")
-                        .WithMany()
-                        .HasForeignKey("PhaseId");
-
                     b.HasOne("CaseManagement.Models.CaseModels.CasePriority", "Priority")
                         .WithMany()
                         .HasForeignKey("PriorityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CaseManagement.Models.CaseModels.ServiceArea", "ServiceArea")
+                    b.HasOne("CaseManagement.Models.CaseModels.QueueStatus", "QueueStatus")
                         .WithMany()
-                        .HasForeignKey("ServiceAreaId");
-
-                    b.HasOne("CaseManagement.Models.CaseModels.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId");
+                        .HasForeignKey("QueueStatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CaseManagement.Models.CaseModels.CaseStatus", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CaseManagement.Models.CaseModels.CaseType", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeId");
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany("Cases")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CaseManagement.Models.CaseModels.WaitingReason", "WaitingReason")
+                        .WithMany()
+                        .HasForeignKey("WaitingReasonId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CaseManagement.Models.CaseModels.CaseModificationLogRecord", b =>
                 {
                     b.HasOne("CaseManagement.Models.CaseModels.Case", "Case")
-                        .WithMany("CaseModificationLogRecords")
+                        .WithMany()
                         .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany("ModifiedCases")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -801,7 +875,7 @@ namespace CaseManagement.Data.Migrations
                     b.HasOne("CaseManagement.Models.TimeZoneRegions.TimeZoneRegion", "TimeZoneRegion")
                         .WithMany("Datacenters")
                         .HasForeignKey("TimeZoneRegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -810,7 +884,7 @@ namespace CaseManagement.Data.Migrations
                     b.HasOne("CaseManagement.Models.DateTimeConverter.Vendor", "Vendor")
                         .WithMany("Regions")
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -818,11 +892,13 @@ namespace CaseManagement.Data.Migrations
                 {
                     b.HasOne("CaseManagement.Models.CaseModels.CaseModificationLogRecord", null)
                         .WithMany("ModifiedFields")
-                        .HasForeignKey("CaseModificationLogRecordId");
+                        .HasForeignKey("CaseModificationLogRecordId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CaseManagement.Models.TaskModels.TaskModificationLogRecord", null)
                         .WithMany("ModifiedFields")
-                        .HasForeignKey("TaskModificationLogRecordId");
+                        .HasForeignKey("TaskModificationLogRecordId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CaseManagement.Models.TaskModels.CaseTask", b =>
@@ -830,34 +906,55 @@ namespace CaseManagement.Data.Migrations
                     b.HasOne("CaseManagement.Models.CaseModels.Case", "Case")
                         .WithMany("Tasks")
                         .HasForeignKey("CaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CaseManagement.Models.TaskModels.TaskStatus", "Status")
+                    b.HasOne("CaseManagement.Models.CaseModels.CasePriority", "Priority")
                         .WithMany()
-                        .HasForeignKey("StatusId");
+                        .HasForeignKey("PriorityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("CaseManagement.Models.TaskModels.TaskType", "Type")
+                    b.HasOne("CaseManagement.Models.CaseModels.QueueStatus", "QueueStatus")
                         .WithMany()
-                        .HasForeignKey("TypeId");
+                        .HasForeignKey("QueueStatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CaseManagement.Models.CaseModels.CaseStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CaseManagement.Models.CaseModels.CaseType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany("Tasks")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CaseManagement.Models.CaseModels.WaitingReason", "WaitingReason")
+                        .WithMany()
+                        .HasForeignKey("WaitingReasonId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("CaseManagement.Models.TaskModels.TaskModificationLogRecord", b =>
                 {
                     b.HasOne("CaseManagement.Models.TaskModels.CaseTask", "Task")
-                        .WithMany("TaskModificationLogRecords")
+                        .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany("ModifiedTasks")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

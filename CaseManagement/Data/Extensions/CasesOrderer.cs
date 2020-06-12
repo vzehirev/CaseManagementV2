@@ -51,20 +51,20 @@ namespace CaseManagement.Data.Extensions
 
         // The numbers returned correspond to the order/importance of the values
         private static readonly Expression<Func<Case, int>> orderByStatus = (caseObj) =>
-            caseObj.Status.Status == "Other" ? 1 :
-            caseObj.Status.Status == "Closed" ? 2 :
-            caseObj.Status.Status == "On-hold" ? 3 :
-            caseObj.Status.Status == "Resolved" ? 4 :
-            caseObj.Status.Status == "In Process" ? 5 :
-            caseObj.Status.Status == "Waiting" ? 6 :
-            caseObj.Status.Status == "New" ? 7 :
+            caseObj.Status.CaseStatusName == "Other" ? 1 :
+            caseObj.Status.CaseStatusName == "Closed" ? 2 :
+            caseObj.Status.CaseStatusName == "On-hold" ? 3 :
+            caseObj.Status.CaseStatusName == "Resolved" ? 4 :
+            caseObj.Status.CaseStatusName == "In Process" ? 5 :
+            caseObj.Status.CaseStatusName == "Waiting" ? 6 :
+            caseObj.Status.CaseStatusName == "New" ? 7 :
             8;
 
         private static readonly Expression<Func<Case, int>> orderByPriority = (caseObj) =>
-            caseObj.Priority.Priority == "Low" ? 1 :
-            caseObj.Priority.Priority == "Normal" ? 2 :
-            caseObj.Priority.Priority == "Urgent" ? 3 :
-            caseObj.Priority.Priority == "Immediate" ? 4 :
+            caseObj.Priority.CasePriorityName == "Low" ? 1 :
+            caseObj.Priority.CasePriorityName == "Normal" ? 2 :
+            caseObj.Priority.CasePriorityName == "Urgent" ? 3 :
+            caseObj.Priority.CasePriorityName == "Immediate" ? 4 :
             5;
     }
 }

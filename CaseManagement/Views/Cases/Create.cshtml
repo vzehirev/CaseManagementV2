@@ -20,13 +20,13 @@
 
                             @foreach (var status in Model.CaseStatuses)
                             {
-                                if (status.Status == "N/A")
+                                if (status.CaseStatusName == "N/A")
                                 {
-                                    <option value="@status.Id" selected>@status.Status</option>
+                                    <option value="@status.Id" selected>@status.CaseStatusName</option>
                                 }
                                 else
                                 {
-                                    <option value="@status.Id">@status.Status</option>
+                                    <option value="@status.Id">@status.CaseStatusName</option>
                                 }
                             }
 
@@ -39,13 +39,13 @@
 
                             @foreach (var priority in Model.CasePriorities)
                             {
-                                if (priority.Priority == "N/A")
+                                if (priority.CasePriorityName == "N/A")
                                 {
-                                    <option value="@priority.Id" selected>@priority.Priority</option>
+                                    <option value="@priority.Id" selected>@priority.CasePriorityName</option>
                                 }
                                 else
                                 {
-                                    <option value="@priority.Id">@priority.Priority</option>
+                                    <option value="@priority.Id">@priority.CasePriorityName</option>
                                 }
                             }
 
@@ -64,7 +64,7 @@
 
                             @foreach (var type in Model.CaseTypes)
                             {
-                                <option value="@type.Id">@type.Type</option>
+                                <option value="@type.Id">@type.CaseTypeName</option>
                             }
 
                         </select>

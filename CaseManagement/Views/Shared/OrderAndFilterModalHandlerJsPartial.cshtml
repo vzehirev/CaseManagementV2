@@ -1,0 +1,19 @@
+﻿<script>
+        let orderAndFilterModal = document.getElementById("orderAndFilterModal");
+
+        let orderAndFilterBtn = document.getElementById("orderAndFilterBtn");
+        orderAndFilterBtn.addEventListener("click", openModal);
+
+        let closeModalBtns = document.getElementsByClassName("closeModalBtn");
+        for (closeModalBtn of closeModalBtns) {
+            closeModalBtn.addEventListener("click", closeModal);
+        }
+
+        function openModal() {
+            orderAndFilterModal.classList.add("d-block");
+        }
+
+        function closeModal() {
+            orderAndFilterModal.classList.remove("d-block");
+        }
+</script>

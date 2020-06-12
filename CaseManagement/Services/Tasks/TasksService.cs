@@ -1,8 +1,15 @@
 ﻿using CaseManagement.Data;
 using CaseManagement.Models;
+using CaseManagement.Models.CaseModels;
 using CaseManagement.Models.TaskModels;
+using CaseManagement.Services.Cases;
+using CaseManagement.ViewModels.CasePriorities;
+using CaseManagement.ViewModels.CaseStatuses;
+using CaseManagement.ViewModels.CaseType;
+using CaseManagement.ViewModels.QueueStatus;
 using CaseManagement.ViewModels.Tasks;
-using CaseManagement.ViewModels.Tasks.Input;
+using CaseManagement.ViewModels.Tasks.Create;
+using CaseManagement.ViewModels.WaitingReason;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,30 +21,40 @@ namespace CaseManagement.Services.Tasks
     public class TasksService : ITasksService
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly ICasesService casesService;
 
-        public TasksService(ApplicationDbContext dbContext)
+        public TasksService(ApplicationDbContext dbContext, ICasesService casesService)
         {
             this.dbContext = dbContext;
+            this.casesService = casesService;
         }
 
-        public async Task<int> CreateTaskAsync(CreateTaskInputModel inputModel, string userId)
+        public async Task<int> CreateTaskAsync(TaskCreateViewModel viewModel, string userId)
         {
             CaseTask taskToAdd = new CaseTask
             {
-                CreatedOn = DateTime.UtcNow,
+                ReportedAt = viewModel.ReportedAt,
+                LastUpdatedUtc = DateTime.UtcNow,
                 UserId = userId,
-                CaseId = inputModel.CaseId,
-                TypeId = inputModel.TypeId,
-                StatusId = inputModel.StatusId,
-                Action = inputModel.Action,
-                NextAction = inputModel.NextAction,
-                Comments = inputModel.Comments,
+                CaseId = viewModel.CaseId,
+                TypeId = viewModel.SelectedTypeId,
+                StatusId = viewModel.SelectedStatusId,
+                AssignedProcessor = viewModel.AssignedProcessor,
+                Notes = viewModel.Notes,
+                PriorityId = viewModel.SelectedPriorityId,
+                Queue = viewModel.Queue,
+                QueueStatusId = viewModel.SelectedQueueStatusId,
+                ResumeAt = viewModel.ResumeAt,
+                Subject = viewModel.Subject,
+                WaitingReasonId = viewModel.SelectedWaitingReasonId,
             };
 
             dbContext.Tasks.Add(taskToAdd);
-            int saveResult = await dbContext.SaveChangesAsync();
+            int result = await dbContext.SaveChangesAsync();
 
-            return saveResult;
+            await casesService.UpdateCaseAsync(taskToAdd);
+
+            return result;
         }
 
         public async Task<ICollection<Models.TaskModels.TaskStatus>> GetAllTaskStatusesAsync()
@@ -56,10 +73,7 @@ namespace CaseManagement.Services.Tasks
                 .Select(t => new ViewUpdateTaskIOModel
                 {
                     Id = t.Id,
-                    Action = t.Action,
-                    Comments = t.Comments,
-                    CreatedOn = t.CreatedOn,
-                    NextAction = t.NextAction,
+                    CreatedOn = t.ReportedAt,
                     StatusId = t.Status.Id,
                     TypeId = t.Type.Id,
                     CaseId = t.CaseId,
@@ -72,22 +86,69 @@ namespace CaseManagement.Services.Tasks
             return outputModel;
         }
 
+        public async Task<TaskCreateViewModel> GenerateTaskCreateViewModel(int caseId)
+        {
+            var result = await dbContext.Cases
+                .Where(x => x.Id == caseId)
+                .Select(x => new TaskCreateViewModel
+                {
+                    CaseNumber = x.Number,
+                    SelectedPriorityId = x.PriorityId,
+                    Subject = x.Subject,
+                    SelectedStatusId = x.StatusId,
+                    SelectedWaitingReasonId = x.WaitingReasonId,
+                    SelectedTypeId = x.TypeId,
+                    Queue = x.Queue,
+                    SelectedQueueStatusId = x.QueueStatusId,
+                    ReportedAt = x.ReportedAt,
+                    ResumeAt = x.ResumeAt,
+                    AssignedProcessor = x.AssignedProcessor,
+                    Notes = x.Notes,
+                    AllPriorities = dbContext.CasePriorities
+                        .Where(x => x.CasePriorityName != "N/A")
+                        .Select(x => new CasePriorityViewModel
+                        {
+                            Id = x.Id,
+                            CasePriorityName = x.CasePriorityName,
+                        }),
+                    AllQueueStatuses = dbContext.QueueStatuses
+                        .Select(x => new QueueStatusViewModel
+                        {
+                            Id = x.Id,
+                            QueueStatusName = x.QueueStatusName,
+                        }),
+                    AllTypes = dbContext.CaseTypes
+                        .Where(x => x.CaseTypeName != "N/A")
+                        .Select(x => new CaseTypeViewModel
+                        {
+                            Id = x.Id,
+                            CaseTypeName = x.CaseTypeName,
+                        }),
+                    AllStatuses = dbContext.CaseStatuses
+                        .Where(x => x.CaseStatusName != "N/A")
+                        .Select(x => new CaseStatusViewModel
+                        {
+                            Id = x.Id,
+                            CaseStatusName = x.CaseStatusName,
+                        }),
+                    AllWaitingReasons = dbContext.WaitingReasons
+                        .Select(x => new WaitingReasonViewModel
+                        {
+                            Id = x.Id,
+                            WaitingReasonName = x.WaitingReasonName,
+                        }),
+                })
+                .FirstOrDefaultAsync();
+
+            return result;
+        }
+
         public async Task<int> UpdateTaskAsync(ViewUpdateTaskIOModel inputModel, string userId)
         {
             CaseTask taskRecordToUpdate = await dbContext.Tasks
                    .FirstOrDefaultAsync(t => t.Id == inputModel.Id);
 
             List<FieldModification> fieldModifications = new List<FieldModification>();
-
-            if (taskRecordToUpdate.Comments != inputModel.Comments)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Comments",
-                    OldValue = taskRecordToUpdate.Comments,
-                    NewValue = inputModel.Comments,
-                });
-            }
 
             if (taskRecordToUpdate.TypeId != inputModel.TypeId)
             {
@@ -109,32 +170,9 @@ namespace CaseManagement.Services.Tasks
                 });
             }
 
-            if (taskRecordToUpdate.Action != inputModel.Action)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Action",
-                    OldValue = taskRecordToUpdate.Action,
-                    NewValue = inputModel.Action,
-                });
-            }
-
-            if (taskRecordToUpdate.NextAction != inputModel.NextAction)
-            {
-                fieldModifications.Add(new FieldModification
-                {
-                    FieldName = "Next action",
-                    OldValue = taskRecordToUpdate.NextAction,
-                    NewValue = inputModel.NextAction,
-                });
-            }
-
-            taskRecordToUpdate.Comments = inputModel.Comments;
             taskRecordToUpdate.TypeId = inputModel.TypeId;
-            taskRecordToUpdate.LastModified = DateTime.UtcNow;
+            taskRecordToUpdate.LastUpdatedUtc = DateTime.UtcNow;
             taskRecordToUpdate.StatusId = inputModel.StatusId;
-            taskRecordToUpdate.Action = inputModel.Action;
-            taskRecordToUpdate.NextAction = inputModel.NextAction;
 
             if (fieldModifications.Count > 0)
             {
