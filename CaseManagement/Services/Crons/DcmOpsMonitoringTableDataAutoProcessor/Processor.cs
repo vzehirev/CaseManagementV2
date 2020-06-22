@@ -36,21 +36,28 @@ namespace CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor
             while (!stoppingToken.IsCancellationRequested)
             {
                 var lastProcessedRecord = await dbContext.Cases
-                    .OrderByDescending(x => x.SNo)
+                    .OrderBy(x => x.SNo)
                     .Select(x => x.SNo)
-                    .FirstOrDefaultAsync();
-
+                    .LastOrDefaultAsync();
 
                 var notProcessedRecords = await dbContext.DCMOpsMonitoring
                     .Where(x => x.SNo > lastProcessedRecord)
+                    .OrderBy(x => x.SNo)
                     .ToArrayAsync();
 
-                foreach (var record in notProcessedRecords)
+                var casePriorities = await dbContext.CasePriorities.ToDictionaryAsync(x => x.CasePriorityName.ToLower(), x => x.Id);
+                var caseStatuses = await dbContext.CaseStatuses.ToDictionaryAsync(x => x.CaseStatusName.ToLower(), x => x.Id);
+                var caseTypes = await dbContext.CaseTypes.ToDictionaryAsync(x => x.CaseTypeName.ToLower(), x => x.Id);
+                var caseWaitingReasons = await dbContext.WaitingReasons.ToDictionaryAsync(x => x.WaitingReasonName.ToLower(), x => x.Id);
+                var caseQueueStatuses = await dbContext.QueueStatuses.ToDictionaryAsync(x => x.QueueStatusName.ToLower(), x => x.Id);
+
+                for (int i = 0; i < notProcessedRecords.Length; i++)
                 {
+                    var record = notProcessedRecords[i];
                     try
                     {
                         var alreadyExistingCase = await dbContext.Cases
-                            .FirstOrDefaultAsync(x => x.Number.ToLower() == record.TicketID.ToString().ToLower());
+                            .FirstOrDefaultAsync(x => x.Number == record.TicketID.ToString());
 
                         if (alreadyExistingCase != null)
                         {
@@ -64,49 +71,41 @@ namespace CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor
                             taskToAdd.ResumeAt = record.Resumeat;
                             taskToAdd.Subject = NullOrTheStringValueTrimmed(record.Subject);
 
-                            if (record.Priority == null || dbContext.CasePriorities
-                                .FirstOrDefault(x => x.CasePriorityName.ToLower() == record.Priority.Trim().ToLower()) == null)
+                            if (record.Priority != null && casePriorities.ContainsKey(record.Priority.Trim().ToLower()))
                             {
-                                taskToAdd.PriorityId = dbContext.CasePriorities.First(x => x.CasePriorityName == "N/A").Id;
+                                taskToAdd.PriorityId = casePriorities[record.Priority.Trim().ToLower()];
                             }
                             else
                             {
-                                taskToAdd.PriorityId = dbContext.CasePriorities
-                                    .First(x => x.CasePriorityName.ToLower() == record.Priority.Trim().ToLower()).Id;
+                                taskToAdd.PriorityId = casePriorities["n/a"];
                             }
 
-                            if (record.Status == null || dbContext.CaseStatuses
-                                .FirstOrDefault(x => x.CaseStatusName.ToLower() == record.Status.Trim().ToLower()) == null)
+                            if (record.Status != null && caseStatuses.ContainsKey(record.Status.Trim().ToLower()))
                             {
-                                taskToAdd.StatusId = dbContext.CaseStatuses.First(x => x.CaseStatusName == "N/A").Id;
+                                taskToAdd.StatusId = caseStatuses[record.Status.Trim().ToLower()];
                             }
                             else
                             {
-                                taskToAdd.StatusId = dbContext.CaseStatuses
-                                    .First(x => x.CaseStatusName.ToLower() == record.Status.Trim().ToLower()).Id;
+                                taskToAdd.StatusId = caseStatuses["n/a"];
                             }
 
-                            if (record.TicketType == null || dbContext.CaseTypes
-                                .FirstOrDefault(x => x.CaseTypeName.ToLower() == record.TicketType.Trim().ToLower()) == null)
+                            if (record.TicketType != null && caseTypes.ContainsKey(record.TicketType.Trim().ToLower()))
                             {
-                                taskToAdd.TypeId = dbContext.CaseTypes.First(x => x.CaseTypeName == "N/A").Id;
+                                taskToAdd.TypeId = caseTypes[record.TicketType.Trim().ToLower()];
                             }
                             else
                             {
-                                taskToAdd.TypeId = dbContext.CaseTypes
-                                    .First(x => x.CaseTypeName.ToLower() == record.TicketType.Trim().ToLower()).Id;
+                                taskToAdd.TypeId = caseTypes["n/a"];
                             }
 
-                            if (record.WaitingReason != null)
+                            if (record.WaitingReason != null && caseWaitingReasons.ContainsKey(record.WaitingReason.Trim().ToLower()))
                             {
-                                taskToAdd.WaitingReasonId = dbContext.WaitingReasons
-                                    .FirstOrDefault(x => x.WaitingReasonName.ToLower() == record.WaitingReason.Trim().ToLower())?.Id;
+                                taskToAdd.WaitingReasonId = caseWaitingReasons[record.WaitingReason.Trim().ToLower()];
                             }
 
-                            if (record.Qstatus != null)
+                            if (record.Qstatus != null && caseQueueStatuses.ContainsKey(record.Qstatus.Trim().ToLower()))
                             {
-                                taskToAdd.QueueStatusId = dbContext.QueueStatuses
-                                    .FirstOrDefault(x => x.QueueStatusName.ToLower() == record.Qstatus.Trim().ToLower())?.Id;
+                                taskToAdd.QueueStatusId = caseQueueStatuses[record.Qstatus.Trim().ToLower()];
                             }
 
                             dbContext.Tasks.Add(taskToAdd);
@@ -129,10 +128,10 @@ namespace CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor
 
                             if (record.TicketID == null)
                             {
-                                throw new ArgumentException($"No case number found at record with SNo = {record.SNo}");
+                                throw new Exception($"No case number found at record with SNo = {record.SNo}");
                             }
 
-                            caseToAdd.Number = record.TicketID.ToString().Trim();
+                            caseToAdd.Number = record.TicketID.ToString();
                             caseToAdd.SNo = record.SNo;
                             caseToAdd.ReportedAt = record.ReportedDate == null ? DateTime.UtcNow : record.ReportedDate.Value;
                             caseToAdd.AssignedProcessor = NullOrTheStringValueTrimmed(record.Assigned);
@@ -142,49 +141,42 @@ namespace CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor
                             caseToAdd.ResumeAt = record.Resumeat;
                             caseToAdd.Subject = NullOrTheStringValueTrimmed(record.Subject);
 
-                            if (record.Priority == null || dbContext.CasePriorities
-                                .FirstOrDefault(x => x.CasePriorityName.ToLower() == record.Priority.Trim().ToLower()) == null)
+
+                            if (record.Priority != null && casePriorities.ContainsKey(record.Priority.Trim().ToLower()))
                             {
-                                caseToAdd.PriorityId = dbContext.CasePriorities.First(x => x.CasePriorityName == "N/A").Id;
+                                caseToAdd.PriorityId = casePriorities[record.Priority.Trim().ToLower()];
                             }
                             else
                             {
-                                caseToAdd.PriorityId = dbContext.CasePriorities
-                                    .First(x => x.CasePriorityName.ToLower() == record.Priority.Trim().ToLower()).Id;
+                                caseToAdd.PriorityId = casePriorities["n/a"];
                             }
 
-                            if (record.Status == null || dbContext.CaseStatuses
-                                .FirstOrDefault(x => x.CaseStatusName.ToLower() == record.Status.Trim().ToLower()) == null)
+                            if (record.Status != null && caseStatuses.ContainsKey(record.Status.Trim().ToLower()))
                             {
-                                caseToAdd.StatusId = dbContext.CaseStatuses.First(x => x.CaseStatusName == "N/A").Id;
+                                caseToAdd.StatusId = caseStatuses[record.Status.Trim().ToLower()];
                             }
                             else
                             {
-                                caseToAdd.StatusId = dbContext.CaseStatuses
-                                    .First(x => x.CaseStatusName.ToLower() == record.Status.Trim().ToLower()).Id;
+                                caseToAdd.StatusId = caseStatuses["n/a"];
                             }
 
-                            if (record.TicketType == null || dbContext.CaseTypes
-                                .FirstOrDefault(x => x.CaseTypeName.ToLower() == record.TicketType.Trim().ToLower()) == null)
+                            if (record.TicketType != null && caseTypes.ContainsKey(record.TicketType.Trim().ToLower()))
                             {
-                                caseToAdd.TypeId = dbContext.CaseTypes.First(x => x.CaseTypeName == "N/A").Id;
+                                caseToAdd.TypeId = caseTypes[record.TicketType.Trim().ToLower()];
                             }
                             else
                             {
-                                caseToAdd.TypeId = dbContext.CaseTypes
-                                    .First(x => x.CaseTypeName.ToLower() == record.TicketType.Trim().ToLower()).Id;
+                                caseToAdd.TypeId = caseTypes["n/a"];
                             }
 
-                            if (record.WaitingReason != null)
+                            if (record.WaitingReason != null && caseWaitingReasons.ContainsKey(record.WaitingReason.Trim().ToLower()))
                             {
-                                caseToAdd.WaitingReasonId = dbContext.WaitingReasons
-                                    .FirstOrDefault(x => x.WaitingReasonName.ToLower() == record.WaitingReason.Trim().ToLower())?.Id;
+                                caseToAdd.WaitingReasonId = caseWaitingReasons[record.WaitingReason.Trim().ToLower()];
                             }
 
-                            if (record.Qstatus != null)
+                            if (record.Qstatus != null && caseQueueStatuses.ContainsKey(record.Qstatus.Trim().ToLower()))
                             {
-                                caseToAdd.QueueStatusId = dbContext.QueueStatuses
-                                    .FirstOrDefault(x => x.QueueStatusName.ToLower() == record.Qstatus.Trim().ToLower())?.Id;
+                                caseToAdd.QueueStatusId = caseQueueStatuses[record.Qstatus.Trim().ToLower()];
                             }
 
                             dbContext.Cases.Add(caseToAdd);
@@ -196,7 +188,12 @@ namespace CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor
                         var error = new DcmOpsMonitoringTableProcessorError();
 
                         error.DateAndTime = DateTime.UtcNow;
-                        error.ErrorMessage = ex.Message;
+                        error.ErrorMessage = $"Record SNo: {record.SNo}; Exception: {ex.Message}; Inner exception: {ex.InnerException}";
+
+                        foreach (var entry in dbContext.ChangeTracker.Entries())
+                        {
+                            entry.State = EntityState.Detached;
+                        }
 
                         dbContext.DcmOpsMonitoringTableProcessorErrors.Add(error);
                         await dbContext.SaveChangesAsync();

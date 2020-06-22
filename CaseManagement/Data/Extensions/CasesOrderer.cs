@@ -20,7 +20,7 @@ namespace CaseManagement.Data.Extensions
             string orderByPropertyName = orderBy.Split('-').FirstOrDefault();
 
             string orderByDescOrAsc = orderBy.Split('-').LastOrDefault();
-            bool ascending = orderByDescOrAsc == "asc" ? true : false;
+            bool ascending = orderByDescOrAsc == "asc";
 
             if (orderByPropertyName == "Status")
             {

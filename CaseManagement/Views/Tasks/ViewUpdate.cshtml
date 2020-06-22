@@ -21,11 +21,6 @@
                         <label>Type</label>
                         <select asp-for="TypeId" class="form-control">
 
-                            @if (Model.TypeId == null)
-                            {
-                                <option value="">Select type</option>
-                            }
-
                             @foreach (var type in Model.TaskTypes)
                             {
                                 if (Model.TypeId == type.Id)
@@ -44,11 +39,6 @@
                     <div class="form-group col-4">
                         <label>Status</label>
                         <select asp-for="StatusId" class="form-control">
-
-                            @if (Model.StatusId == null)
-                            {
-                                <option value="">Select status</option>
-                            }
 
                             @foreach (var status in Model.TaskStatuses)
                             {
