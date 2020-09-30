@@ -32,6 +32,10 @@
     <Compile Remove="Data\Migrations\20200604092133_uha.Designer.cs" />
     <Compile Remove="Data\Migrations\20200612053821_MakeSomeCaseAndTaskFieldsNullable.cs" />
     <Compile Remove="Data\Migrations\20200612053821_MakeSomeCaseAndTaskFieldsNullable.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200930132536_AddTicketTypeEntityAndSeedInitialValues.cs" />
+    <Compile Remove="Data\Migrations\20200930132536_AddTicketTypeEntityAndSeedInitialValues.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200930132637_AddTicketTypeEntityAndSeedInitialValues.cs" />
+    <Compile Remove="Data\Migrations\20200930132637_AddTicketTypeEntityAndSeedInitialValues.Designer.cs" />
   </ItemGroup>
 
 

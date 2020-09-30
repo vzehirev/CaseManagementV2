@@ -2,6 +2,7 @@ using CaseManagement.Crons.DcmOpsMonitoringTableDataAutoProcessor;
 using CaseManagement.Data;
 using CaseManagement.Models;
 using CaseManagement.Services;
+using CaseManagement.Services.AgentAssignment;
 using CaseManagement.Services.Announcements;
 using CaseManagement.Services.CasePriorities;
 using CaseManagement.Services.Cases;
@@ -62,6 +63,7 @@ namespace CaseManagement
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ITimeZoneRegionsService, TimeZoneRegionsService>();
             services.AddTransient<IMonitoringService, MonitoringService>();
+            services.AddTransient<IAgentAssignmentService, AgentAssignmentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

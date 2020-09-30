@@ -1,0 +1,38 @@
+﻿@model CaseManagement.ViewModels.AgentAssignment.IndexViewModel
+
+<h1>AGENT ASSIGNMENT DASHBOARD</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr class="table-active">
+            <th scope="col">C USER</th>
+            <th scope="col">NAME</th>
+            <th scope="col">AVAILABLE</th>
+            @foreach (var ticketType in Model.TicketTypes)
+            {
+                <th scope="col">@ticketType.Name</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="table-warning">
+            <th scope="row">Pesho</th>
+            <th scope="row">Pesho ID</th>
+            <td>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="available">
+                    <label class="custom-control-label" for="available"></label>
+                </div>
+            </td>
+            @foreach (var ticketType in Model.TicketTypes)
+            {
+                <td>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="@ticketType.Name">
+                        <label class="custom-control-label" for="@ticketType.Name"></label>
+                    </div>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 ﻿using CaseManagement.Models;
+using CaseManagement.Models.AgentAssignment;
 using CaseManagement.Models.CaseModels;
 using CaseManagement.Models.Datacenters;
 using CaseManagement.Models.DateTimeConverter;
@@ -69,6 +70,8 @@ namespace CaseManagement.Data
         public DbSet<QueueStatus> QueueStatuses { get; set; }
 
         public DbSet<WaitingReason> WaitingReasons { get; set; }
+
+        public DbSet<TicketType> TicketTypes { get; set; }
 
         public DbSet<DcmOpsMonitoringTableProcessorError> DcmOpsMonitoringTableProcessorErrors { get; set; }
     }
