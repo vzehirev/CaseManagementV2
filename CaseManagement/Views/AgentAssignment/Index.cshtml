@@ -1,38 +1,88 @@
 ﻿@model CaseManagement.ViewModels.AgentAssignment.IndexViewModel
 
 <h1>AGENT ASSIGNMENT DASHBOARD</h1>
+<form method="post" asp-area="" asp-controller="AgentAssignment" asp-action="UpdateAvailabilityAndSkills">
+    <button type="submit" class="btn btn-success mb-2">UPDATE</button>
 
-<table class="table table-hover">
-    <thead>
-        <tr class="table-active">
-            <th scope="col">C USER</th>
-            <th scope="col">NAME</th>
-            <th scope="col">AVAILABLE</th>
-            @foreach (var ticketType in Model.TicketTypes)
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-active">
+                <th scope="col">C USER</th>
+                <th scope="col">NAME</th>
+                <th scope="col">AVAILABLE</th>
+                <th scope="col">TTES 1&2</th>
+                <th scope="col">TTES 3&4</th>
+                <th scope="col">RTPU 1&2</th>
+                <th scope="col">RTPU 3&4</th>
+                <th scope="col">EXECUTE 1&2</th>
+                <th scope="col">EXECUTE 3&4</th>
+                <th scope="col">OTHER 1&2</th>
+                <th scope="col">OTHER 3&4</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.AgentsAvailabilityAndSkills.Count(); i++)
             {
-                <th scope="col">@ticketType.Name</th>
+                <input type="hidden" asp-for="@Model.AgentsAvailabilityAndSkills[i].CUser" />
+                <tr class="table-warning">
+                    <th scope="row">@Model.AgentsAvailabilityAndSkills[i].CUser</th>
+                    <th scope="row">@Model.AgentsAvailabilityAndSkills[i].FullName</th>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-available" asp-for="@Model.AgentsAvailabilityAndSkills[i].IsAvailable">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-available"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-ttes12" asp-for="@Model.AgentsAvailabilityAndSkills[i].TTES12">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-ttes12"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-ttes34" asp-for="@Model.AgentsAvailabilityAndSkills[i].TTES34">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-ttes34"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-rtpu12" asp-for="@Model.AgentsAvailabilityAndSkills[i].RTPU12">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-rtpu12"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-rtpu34" asp-for="@Model.AgentsAvailabilityAndSkills[i].RTPU34">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-rtpu34"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-ex12" asp-for="@Model.AgentsAvailabilityAndSkills[i].EX12">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-ex12"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-ex34" asp-for="@Model.AgentsAvailabilityAndSkills[i].EX34">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-ex34"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-other12" asp-for="@Model.AgentsAvailabilityAndSkills[i].Other12">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-other12"></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="@Model.AgentsAvailabilityAndSkills[i].CUser-other34" asp-for="@Model.AgentsAvailabilityAndSkills[i].Other34">
+                            <label class="custom-control-label" for="@Model.AgentsAvailabilityAndSkills[i].CUser-other34"></label>
+                        </div>
+                    </td>
+                </tr>
             }
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="table-warning">
-            <th scope="row">Pesho</th>
-            <th scope="row">Pesho ID</th>
-            <td>
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="available">
-                    <label class="custom-control-label" for="available"></label>
-                </div>
-            </td>
-            @foreach (var ticketType in Model.TicketTypes)
-            {
-                <td>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="@ticketType.Name">
-                        <label class="custom-control-label" for="@ticketType.Name"></label>
-                    </div>
-                </td>
-            }
-        </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</form>

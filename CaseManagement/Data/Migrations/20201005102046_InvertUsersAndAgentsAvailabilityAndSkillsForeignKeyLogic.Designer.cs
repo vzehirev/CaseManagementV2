@@ -4,14 +4,16 @@ using CaseManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CaseManagement.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201005102046_InvertUsersAndAgentsAvailabilityAndSkillsForeignKeyLogic")]
+    partial class InvertUsersAndAgentsAvailabilityAndSkillsForeignKeyLogic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,7 +109,7 @@ namespace CaseManagement.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AgentAvailabilityAndSkillsId")
+                    b.Property<int>("AgentAvailabilityAndSkillsId")
                         .HasColumnType("int");
 
                     b.Property<string>("CUser")
@@ -887,7 +889,8 @@ namespace CaseManagement.Data.Migrations
                     b.HasOne("CaseManagement.Models.AgentAssignment.AgentAvailabilityAndSkills", "AgentAvailabilityAndSkills")
                         .WithMany()
                         .HasForeignKey("AgentAvailabilityAndSkillsId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CaseManagement.Models.CaseModels.Case", b =>

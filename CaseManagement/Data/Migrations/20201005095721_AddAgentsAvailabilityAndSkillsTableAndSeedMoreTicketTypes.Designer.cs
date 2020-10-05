@@ -4,14 +4,16 @@ using CaseManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CaseManagement.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201005095721_AddAgentsAvailabilityAndSkillsTableAndSeedMoreTicketTypes")]
+    partial class AddAgentsAvailabilityAndSkillsTableAndSeedMoreTicketTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +55,13 @@ namespace CaseManagement.Data.Migrations
                     b.Property<bool>("TTES34")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AgentsAvailabilityAndSkills");
                 });
@@ -106,12 +114,6 @@ namespace CaseManagement.Data.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<int?>("AgentAvailabilityAndSkillsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CUser")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -169,8 +171,6 @@ namespace CaseManagement.Data.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AgentAvailabilityAndSkillsId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -873,7 +873,7 @@ namespace CaseManagement.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("CaseManagement.Models.Announcement", b =>
+            modelBuilder.Entity("CaseManagement.Models.AgentAssignment.AgentAvailabilityAndSkills", b =>
                 {
                     b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany()
@@ -882,12 +882,13 @@ namespace CaseManagement.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CaseManagement.Models.ApplicationUser", b =>
+            modelBuilder.Entity("CaseManagement.Models.Announcement", b =>
                 {
-                    b.HasOne("CaseManagement.Models.AgentAssignment.AgentAvailabilityAndSkills", "AgentAvailabilityAndSkills")
+                    b.HasOne("CaseManagement.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("AgentAvailabilityAndSkillsId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CaseManagement.Models.CaseModels.Case", b =>

@@ -73,6 +73,8 @@ namespace CaseManagement.Data
 
         public DbSet<TicketType> TicketTypes { get; set; }
 
+        public DbSet<AgentAvailabilityAndSkills> AgentsAvailabilityAndSkills { get; set; }
+
         public DbSet<DcmOpsMonitoringTableProcessorError> DcmOpsMonitoringTableProcessorErrors { get; set; }
     }
 }

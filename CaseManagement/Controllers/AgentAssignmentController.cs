@@ -19,14 +19,22 @@ namespace CaseManagement.Controllers
             this.agentAssignmentService = agentAssignmentService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
+            var agentsAvailabilityAndSkills = await this.agentAssignmentService.GetAllAgentsAvailabilityAndSkillsAsync();
             var viewModel = new IndexViewModel
             {
-                TicketTypes = await this.agentAssignmentService.GetAllTicketTypesAsync()
+                AgentsAvailabilityAndSkills = agentsAvailabilityAndSkills.ToArray()
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateAvailabilityAndSkills(List<AgentAvailabiltyAndSkillsViewModel> AgentsAvailabilityAndSkills)
+        {
+            return View();
         }
     }
 }

@@ -38,6 +38,9 @@ namespace CaseManagement.Areas.Identity.Pages.Account.Manage
             [Required]
             [Display(Name = "Last name")]
             public string LastName { get; set; }
+
+            [Display(Name = "C-User")]
+            public string CUser { get; set; }
         }
 
         private void Load(ApplicationUser user)
@@ -45,6 +48,7 @@ namespace CaseManagement.Areas.Identity.Pages.Account.Manage
             string userName = user.UserName;
             string firstName = user.FirstName;
             string lastName = user.LastName;
+            string cUser = user.CUser;
 
             Username = userName;
 
@@ -52,6 +56,7 @@ namespace CaseManagement.Areas.Identity.Pages.Account.Manage
             {
                 FirstName = firstName,
                 LastName = lastName,
+                CUser = cUser
             };
         }
 
@@ -83,6 +88,7 @@ namespace CaseManagement.Areas.Identity.Pages.Account.Manage
 
             user.FirstName = Input.FirstName;
             user.LastName = Input.LastName;
+            user.CUser = Input.CUser.ToUpper();
 
             IdentityResult updateResult = await _userManager.UpdateAsync(user);
 

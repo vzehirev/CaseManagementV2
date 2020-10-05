@@ -1,4 +1,5 @@
-﻿using CaseManagement.Models.CaseModels;
+﻿using CaseManagement.Models.AgentAssignment;
+using CaseManagement.Models.CaseModels;
 using CaseManagement.Models.TaskModels;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -17,6 +18,12 @@ namespace CaseManagement.Models
         public string LastName { get; set; }
 
         public DateTime LastActivity { get; set; }
+
+        public string CUser { get; set; }
+
+        public int? AgentAvailabilityAndSkillsId { get; set; }
+
+        public AgentAvailabilityAndSkills AgentAvailabilityAndSkills { get; set; }
 
         [NotMapped]
         public string FullName

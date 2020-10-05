@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CaseManagement.ViewModels.AgentAssignment
 {
     public class IndexViewModel
     {
-        public IEnumerable<TicketTypeViewModel> TicketTypes { get; set; }
+        public AgentAvailabiltyAndSkillsViewModel[] AgentsAvailabilityAndSkills { get; set; }
     }
 }
