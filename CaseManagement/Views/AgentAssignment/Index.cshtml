@@ -1,6 +1,15 @@
 ﻿@model CaseManagement.ViewModels.AgentAssignment.IndexViewModel
 
 <h1>AGENT ASSIGNMENT DASHBOARD</h1>
+
+@if (this.TempData["UpdateSuccessful"] as bool? == true)
+{
+    <div class="alert alert-dismissible alert-success w-25">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Updated successfully.</strong>
+    </div>
+}
+
 <form method="post" asp-area="" asp-controller="AgentAssignment" asp-action="UpdateAvailabilityAndSkills">
     <button type="submit" class="btn btn-success mb-2">UPDATE</button>
 

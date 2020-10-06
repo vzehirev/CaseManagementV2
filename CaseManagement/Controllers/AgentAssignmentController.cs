@@ -32,9 +32,13 @@ namespace CaseManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateAvailabilityAndSkills(List<AgentAvailabiltyAndSkillsViewModel> AgentsAvailabilityAndSkills)
+        public async Task<IActionResult> UpdateAvailabilityAndSkills(IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabilityAndSkills)
         {
-            return View();
+            await this.agentAssignmentService.UpdateAgentsAvailabilityAndSkillsAsync(agentsAvailabilityAndSkills);
+
+            this.TempData["UpdateSuccessful"] = true;
+
+            return RedirectToAction(nameof(this.Index));
         }
     }
 }
