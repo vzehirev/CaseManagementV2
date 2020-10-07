@@ -12,7 +12,7 @@ namespace CaseManagement.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
                     IsAvailable = table.Column<bool>(nullable: false),
                     TTES12 = table.Column<bool>(nullable: false),
                     TTES34 = table.Column<bool>(nullable: false),

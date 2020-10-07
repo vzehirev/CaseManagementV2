@@ -21,8 +21,7 @@ namespace CaseManagement.Data.Migrations
             migrationBuilder.AddColumn<int>(
                 name: "AgentAvailabilityAndSkillsId",
                 table: "AspNetUsers",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_AgentAvailabilityAndSkillsId",

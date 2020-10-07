@@ -25,6 +25,8 @@ namespace CaseManagement.Models
 
         public AgentAvailabilityAndSkills AgentAvailabilityAndSkills { get; set; }
 
+        public DateTime? LastTicketAssignedAt { get; set; }
+
         [NotMapped]
         public string FullName
         {
