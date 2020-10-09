@@ -1,4 +1,5 @@
-﻿using CaseManagement.Models;
+﻿using CaseManagement.Data;
+using CaseManagement.Models;
 using CaseManagement.Services;
 using CaseManagement.Services.Announcements;
 using CaseManagement.Services.CasePriorities;
@@ -11,7 +12,10 @@ using CaseManagement.ViewModels.Cases.Input;
 using CaseManagement.ViewModels.Cases.Output;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -4,6 +4,7 @@ using CaseManagement.ViewModels.AgentAssignment;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace CaseManagement.Services.AgentAssignment
@@ -36,36 +37,53 @@ namespace CaseManagement.Services.AgentAssignment
                 .ToArrayAsync();
         }
 
-        public async Task<int> UpdateAgentsAvailabilityAndSkillsAsync(IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabiltyAndSkills)
+        public async Task<int> UpdateAgentsAvailabilityAndSkillsAsync(
+            IEnumerable<AgentAvailabiltyAndSkillsViewModel> newAgentsAvailabiltyAndSkills,
+            string changedByUser)
         {
-            var agentsAvailabiltyAndSkillsDict = agentsAvailabiltyAndSkills
+            var newAgentsAvailabiltyAndSkillsDict = newAgentsAvailabiltyAndSkills
                 .Where(x => x.CUser != null)
                 .ToDictionary(x => x.CUser);
 
-            var users = await this.dbContext.Users
-                .Where(x => agentsAvailabiltyAndSkillsDict.Keys.Contains(x.CUser))
+            var agentsAvailabiltyAndSkills = await this.dbContext.Users
+                .Where(x => newAgentsAvailabiltyAndSkillsDict.Keys.Contains(x.CUser))
                 .Include(x => x.AgentAvailabilityAndSkills)
                 .ToArrayAsync();
 
-            foreach (var user in users)
+            var skills = typeof(AgentAvailabilityAndSkills).GetProperties()
+                .Where(x => x.PropertyType == typeof(bool)).ToArray();
+
+            foreach (var user in agentsAvailabiltyAndSkills)
             {
                 if (user.AgentAvailabilityAndSkills == null)
                 {
                     user.AgentAvailabilityAndSkills = new AgentAvailabilityAndSkills();
                 }
 
-                user.AgentAvailabilityAndSkills.IsAvailable = agentsAvailabiltyAndSkillsDict[user.CUser].IsAvailable;
-                user.AgentAvailabilityAndSkills.TTES12 = agentsAvailabiltyAndSkillsDict[user.CUser].TTES12;
-                user.AgentAvailabilityAndSkills.TTES34 = agentsAvailabiltyAndSkillsDict[user.CUser].TTES34;
-                user.AgentAvailabilityAndSkills.RTPU12 = agentsAvailabiltyAndSkillsDict[user.CUser].RTPU12;
-                user.AgentAvailabilityAndSkills.RTPU34 = agentsAvailabiltyAndSkillsDict[user.CUser].RTPU34;
-                user.AgentAvailabilityAndSkills.EX12 = agentsAvailabiltyAndSkillsDict[user.CUser].EX12;
-                user.AgentAvailabilityAndSkills.EX34 = agentsAvailabiltyAndSkillsDict[user.CUser].EX34;
-                user.AgentAvailabilityAndSkills.Other12 = agentsAvailabiltyAndSkillsDict[user.CUser].Other12;
-                user.AgentAvailabilityAndSkills.Other34 = agentsAvailabiltyAndSkillsDict[user.CUser].Other34;
+                foreach (var skill in skills)
+                {
+                    var value = (bool)typeof(AgentAvailabilityAndSkills).GetProperty(skill.Name).GetValue(user.AgentAvailabilityAndSkills);
+                    var newValue = (bool)typeof(AgentAvailabiltyAndSkillsViewModel).GetProperty(skill.Name).GetValue(newAgentsAvailabiltyAndSkillsDict[user.CUser]);
+
+                    if (value != newValue)
+                    {
+                        var changeLog = new AgentAvailabilityAndSkillsChangeLog
+                        {
+                            ChangedByUserId = changedByUser,
+                            UserId = user.Id,
+                            ChangedSkill = skill.Name,
+                            OldValue = value,
+                            NewValue = newValue
+                        };
+
+                        typeof(AgentAvailabilityAndSkills).GetProperty(skill.Name).SetValue(user.AgentAvailabilityAndSkills, newValue);
+
+                        this.dbContext.AgentsAvailabilityAndSkillsChangeLogs.Add(changeLog);
+                    }
+                }
             }
 
-            this.dbContext.Users.UpdateRange(users);
+            this.dbContext.Users.UpdateRange(agentsAvailabiltyAndSkills);
 
             return await this.dbContext.SaveChangesAsync();
         }

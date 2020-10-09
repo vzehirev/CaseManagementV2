@@ -38,6 +38,8 @@
     <Compile Remove="Data\Migrations\20200930132637_AddTicketTypeEntityAndSeedInitialValues.Designer.cs" />
     <Compile Remove="Data\Migrations\20201005095623_AddAgentsAvailabilityAndSkillsTableAndSeedMoreTicketTypes.cs" />
     <Compile Remove="Data\Migrations\20201005095623_AddAgentsAvailabilityAndSkillsTableAndSeedMoreTicketTypes.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201009061819_AddAgentsAvailabilityAndSkillsChangeLogEntity.cs" />
+    <Compile Remove="Data\Migrations\20201009061819_AddAgentsAvailabilityAndSkillsChangeLogEntity.Designer.cs" />
   </ItemGroup>
 
 

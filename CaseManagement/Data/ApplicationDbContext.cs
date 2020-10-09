@@ -73,6 +73,8 @@ namespace CaseManagement.Data
 
         public DbSet<AgentAvailabilityAndSkills> AgentsAvailabilityAndSkills { get; set; }
 
+        public DbSet<AgentAvailabilityAndSkillsChangeLog> AgentsAvailabilityAndSkillsChangeLogs { get; set; }
+
         public DbSet<DcmOpsMonitoringTableProcessorError> DcmOpsMonitoringTableProcessorErrors { get; set; }
     }
 }

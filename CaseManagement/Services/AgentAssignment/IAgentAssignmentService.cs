@@ -8,6 +8,8 @@ namespace CaseManagement.Services.AgentAssignment
     {
         Task<IEnumerable<AgentAvailabiltyAndSkillsViewModel>> GetAllAgentsAvailabilityAndSkillsAsync();
 
-        Task<int> UpdateAgentsAvailabilityAndSkillsAsync(IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabiltyAndSkills);
+        Task<int> UpdateAgentsAvailabilityAndSkillsAsync(
+            IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabiltyAndSkills,
+            string changedByUser);
     }
 }

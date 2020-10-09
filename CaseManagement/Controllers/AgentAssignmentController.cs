@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CaseManagement.Models;
 using CaseManagement.Services.AgentAssignment;
 using CaseManagement.ViewModels.AgentAssignment;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CaseManagement.Controllers
@@ -13,10 +15,12 @@ namespace CaseManagement.Controllers
     public class AgentAssignmentController : Controller
     {
         private readonly IAgentAssignmentService agentAssignmentService;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AgentAssignmentController(IAgentAssignmentService agentAssignmentService)
+        public AgentAssignmentController(IAgentAssignmentService agentAssignmentService, UserManager<ApplicationUser> userManager)
         {
             this.agentAssignmentService = agentAssignmentService;
+            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -34,8 +38,8 @@ namespace CaseManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAvailabilityAndSkills(IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabilityAndSkills)
         {
-            await this.agentAssignmentService.UpdateAgentsAvailabilityAndSkillsAsync(agentsAvailabilityAndSkills);
-
+            await this.agentAssignmentService.UpdateAgentsAvailabilityAndSkillsAsync(agentsAvailabilityAndSkills, this.userManager.GetUserId(this.User));
+            
             this.TempData["UpdateSuccessful"] = true;
 
             return RedirectToAction(nameof(this.Index));
