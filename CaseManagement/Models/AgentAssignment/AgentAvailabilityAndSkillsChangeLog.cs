@@ -27,5 +27,8 @@ namespace CaseManagement.Models.AgentAssignment
 
         [Required]
         public bool NewValue { get; set; }
+
+        [Required]
+        public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
     }
 }
