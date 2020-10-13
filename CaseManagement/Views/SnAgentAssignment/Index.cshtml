@@ -1,4 +1,4 @@
-﻿@model CaseManagement.ViewModels.AgentAssignment.IndexViewModel
+﻿@model CaseManagement.ViewModels.SnAgentAssignment.IndexViewModel
 
 <h1>AGENT ASSIGNMENT DASHBOARD</h1>
 
@@ -32,7 +32,7 @@
         <tbody>
             @for (int i = 0; i < Model.AgentsAvailabilityAndSkills.Count(); i++)
             {
-                <input type="hidden" asp-for="@Model.AgentsAvailabilityAndSkills[i].CUser" />
+                <input type="hidden" asp-for="@Model.AgentsAvailabilityAndSkills[i].UserId" />
                 <tr class="table-warning">
                     <th scope="row">@Model.AgentsAvailabilityAndSkills[i].CUser</th>
                     <th scope="row">@Model.AgentsAvailabilityAndSkills[i].FullName</th>

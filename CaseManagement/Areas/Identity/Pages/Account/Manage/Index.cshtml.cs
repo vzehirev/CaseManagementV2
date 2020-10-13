@@ -88,7 +88,7 @@ namespace CaseManagement.Areas.Identity.Pages.Account.Manage
 
             user.FirstName = Input.FirstName;
             user.LastName = Input.LastName;
-            user.CUser = Input.CUser.ToUpper();
+            user.CUser = Input.CUser;
 
             IdentityResult updateResult = await _userManager.UpdateAsync(user);
 

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace CaseManagement.ViewModels.AgentAssignment
+namespace CaseManagement.Models.SnAgentAssignment
 {
-    public class AgentAvailabiltyAndSkillsViewModel
+    public class SnAgentAvailabilityAndSkills
     {
-        public string CUser { get; set; }
-
-        public string FullName { get; set; }
+        [Required, Key]
+        public int Id { get; set; }
 
         public bool IsAvailable { get; set; }
 

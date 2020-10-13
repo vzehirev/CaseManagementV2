@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CaseManagement.Models;
-using CaseManagement.Services.AgentAssignment;
-using CaseManagement.ViewModels.AgentAssignment;
+using CaseManagement.Services.SnAgentAssignment;
+using CaseManagement.ViewModels.SnAgentAssignment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace CaseManagement.Controllers
 {
     [Authorize]
-    public class AgentAssignmentController : Controller
+    public class SnAgentAssignmentController : Controller
     {
-        private readonly IAgentAssignmentService agentAssignmentService;
+        private readonly ISnAgentAssignmentService agentAssignmentService;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public AgentAssignmentController(IAgentAssignmentService agentAssignmentService, UserManager<ApplicationUser> userManager)
+        public SnAgentAssignmentController(ISnAgentAssignmentService agentAssignmentService, UserManager<ApplicationUser> userManager)
         {
             this.agentAssignmentService = agentAssignmentService;
             this.userManager = userManager;
@@ -36,7 +36,7 @@ namespace CaseManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAvailabilityAndSkills(IEnumerable<AgentAvailabiltyAndSkillsViewModel> agentsAvailabilityAndSkills)
+        public async Task<IActionResult> UpdateAvailabilityAndSkills(IEnumerable<SnAgentAvailabiltyAndSkillsViewModel> agentsAvailabilityAndSkills)
         {
             await this.agentAssignmentService.UpdateAgentsAvailabilityAndSkillsAsync(agentsAvailabilityAndSkills, this.userManager.GetUserId(this.User));
             

@@ -1,5 +1,5 @@
 ﻿using CaseManagement.Models;
-using CaseManagement.Models.AgentAssignment;
+using CaseManagement.Models.SnAgentAssignment;
 using CaseManagement.Models.CaseModels;
 using CaseManagement.Models.Datacenters;
 using CaseManagement.Models.DateTimeConverter;
@@ -9,6 +9,7 @@ using CaseManagement.Models.TimeZoneRegions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using CaseManagement.Models.SpcAgentAssignment;
 
 namespace CaseManagement.Data
 {
@@ -71,9 +72,13 @@ namespace CaseManagement.Data
 
         public DbSet<WaitingReason> WaitingReasons { get; set; }
 
-        public DbSet<AgentAvailabilityAndSkills> AgentsAvailabilityAndSkills { get; set; }
+        public DbSet<SnAgentAvailabilityAndSkills> AgentsAvailabilityAndSkills { get; set; }
 
-        public DbSet<AgentAvailabilityAndSkillsChangeLog> AgentsAvailabilityAndSkillsChangeLogs { get; set; }
+        public DbSet<SnAgentAvailabilityAndSkillsChangeLog> AgentsAvailabilityAndSkillsChangeLogs { get; set; }
+
+        public DbSet<SpcAgentAvailabilityAndSkills> SpcAgentsAvailabilityAndSkills { get; set; }
+
+        public DbSet<SpcAgentAvailabilityAndSkillsChangeLog> SpcAgentsAvailabilityAndSkillsChangeLogs { get; set; }
 
         public DbSet<DcmOpsMonitoringTableProcessorError> DcmOpsMonitoringTableProcessorErrors { get; set; }
     }

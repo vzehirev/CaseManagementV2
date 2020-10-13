@@ -1,4 +1,4 @@
-﻿using CaseManagement.Models.AgentAssignment;
+﻿using CaseManagement.Models.SnAgentAssignment;
 using CaseManagement.Models.CaseModels;
 using CaseManagement.Models.TaskModels;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CaseManagement.Models.SpcAgentAssignment;
 
 namespace CaseManagement.Models
 {
@@ -23,9 +24,15 @@ namespace CaseManagement.Models
 
         public int? AgentAvailabilityAndSkillsId { get; set; }
 
-        public AgentAvailabilityAndSkills AgentAvailabilityAndSkills { get; set; }
+        public SnAgentAvailabilityAndSkills AgentAvailabilityAndSkills { get; set; }
+
+        public int? SpcAgentAvailabilityAndSkillsId { get; set; }
+
+        public SpcAgentAvailabilityAndSkills SpcAgentAvailabilityAndSkills { get; set; }
 
         public DateTime? LastTicketAssignedAt { get; set; }
+
+        public DateTime? SpcLastTicketAssignedAt { get; set; }
 
         [NotMapped]
         public string FullName

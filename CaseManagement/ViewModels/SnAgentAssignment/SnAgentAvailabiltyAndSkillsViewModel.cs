@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CaseManagement.Models.AgentAssignment
+﻿namespace CaseManagement.ViewModels.SnAgentAssignment
 {
-    public class AgentAvailabilityAndSkills
+    public class SnAgentAvailabiltyAndSkillsViewModel
     {
-        [Required, Key]
-        public int Id { get; set; }
+        public string UserId { get; set; }
+
+        public string CUser { get; set; }
+
+        public string FullName { get; set; }
 
         public bool IsAvailable { get; set; }
 

@@ -1,28 +1,28 @@
 ﻿using CaseManagement.Data;
-using CaseManagement.Models.AgentAssignment;
-using CaseManagement.ViewModels.AgentAssignment;
+using CaseManagement.Models.SnAgentAssignment;
+using CaseManagement.ViewModels.SnAgentAssignment;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
-namespace CaseManagement.Services.AgentAssignment
+namespace CaseManagement.Services.SnAgentAssignment
 {
-    public class AgentAssignmentService : IAgentAssignmentService
+    public class SnAgentAssignmentService : ISnAgentAssignmentService
     {
         private readonly ApplicationDbContext dbContext;
 
-        public AgentAssignmentService(ApplicationDbContext dbContext)
+        public SnAgentAssignmentService(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<AgentAvailabiltyAndSkillsViewModel>> GetAllAgentsAvailabilityAndSkillsAsync()
+        public async Task<IEnumerable<SnAgentAvailabiltyAndSkillsViewModel>> GetAllAgentsAvailabilityAndSkillsAsync()
         {
-            return await this.dbContext.Users.Select(x => new AgentAvailabiltyAndSkillsViewModel
+            return await this.dbContext.Users.Select(x => new SnAgentAvailabiltyAndSkillsViewModel
             {
+                UserId = x.Id,
                 CUser = x.CUser,
                 FullName = x.FullName,
                 IsAvailable = x.AgentAvailabilityAndSkills.IsAvailable,
@@ -39,36 +39,34 @@ namespace CaseManagement.Services.AgentAssignment
         }
 
         public async Task<int> UpdateAgentsAvailabilityAndSkillsAsync(
-            IEnumerable<AgentAvailabiltyAndSkillsViewModel> newAgentsAvailabiltyAndSkills,
+            IEnumerable<SnAgentAvailabiltyAndSkillsViewModel> newAgentsAvailabiltyAndSkills,
             string changedByUser)
         {
-            var newAgentsAvailabiltyAndSkillsDict = newAgentsAvailabiltyAndSkills
-                .Where(x => x.CUser != null)
-                .ToDictionary(x => x.CUser);
+            var newAgentsAvailabiltyAndSkillsDict = newAgentsAvailabiltyAndSkills.ToDictionary(x => x.UserId);
 
             var agentsAvailabiltyAndSkills = await this.dbContext.Users
-                .Where(x => newAgentsAvailabiltyAndSkillsDict.Keys.Contains(x.CUser))
+                .Where(x => newAgentsAvailabiltyAndSkillsDict.Keys.Contains(x.Id))
                 .Include(x => x.AgentAvailabilityAndSkills)
                 .ToArrayAsync();
 
-            var skills = typeof(AgentAvailabilityAndSkills).GetProperties()
+            var skills = typeof(SnAgentAvailabilityAndSkills).GetProperties()
                 .Where(x => x.PropertyType == typeof(bool)).ToArray();
 
             foreach (var user in agentsAvailabiltyAndSkills)
             {
                 if (user.AgentAvailabilityAndSkills == null)
                 {
-                    user.AgentAvailabilityAndSkills = new AgentAvailabilityAndSkills();
+                    user.AgentAvailabilityAndSkills = new SnAgentAvailabilityAndSkills();
                 }
 
                 foreach (var skill in skills)
                 {
-                    var value = (bool)typeof(AgentAvailabilityAndSkills).GetProperty(skill.Name).GetValue(user.AgentAvailabilityAndSkills);
-                    var newValue = (bool)typeof(AgentAvailabiltyAndSkillsViewModel).GetProperty(skill.Name).GetValue(newAgentsAvailabiltyAndSkillsDict[user.CUser]);
+                    var value = (bool)typeof(SnAgentAvailabilityAndSkills).GetProperty(skill.Name).GetValue(user.AgentAvailabilityAndSkills);
+                    var newValue = (bool)typeof(SnAgentAvailabiltyAndSkillsViewModel).GetProperty(skill.Name).GetValue(newAgentsAvailabiltyAndSkillsDict[user.Id]);
 
                     if (value != newValue)
                     {
-                        var changeLog = new AgentAvailabilityAndSkillsChangeLog
+                        var changeLog = new SnAgentAvailabilityAndSkillsChangeLog
                         {
                             ChangedByUserId = changedByUser,
                             UserId = user.Id,
@@ -77,7 +75,7 @@ namespace CaseManagement.Services.AgentAssignment
                             NewValue = newValue
                         };
 
-                        typeof(AgentAvailabilityAndSkills).GetProperty(skill.Name).SetValue(user.AgentAvailabilityAndSkills, newValue);
+                        typeof(SnAgentAvailabilityAndSkills).GetProperty(skill.Name).SetValue(user.AgentAvailabilityAndSkills, newValue);
 
                         this.dbContext.AgentsAvailabilityAndSkillsChangeLogs.Add(changeLog);
                     }
