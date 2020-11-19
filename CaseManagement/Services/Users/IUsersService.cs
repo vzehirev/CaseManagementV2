@@ -18,7 +18,13 @@ namespace CaseManagement.Services.Users
 
         Task<bool> UpdateUserLastActivityDateAsync(string userId);
 
-        Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsLastActivityAsync();
+        Task<bool> MakeLead(string userId);
+
+        Task<bool> DeleteAgent(string userId);
+
+        Task<bool> RemoveLead(string userId);
+
+        Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsAsync();
 
         Task<IEnumerable<ReportsAgentsActivitiesAgentViewModel>> GetAllAgentsIdAndFullNameAsync();
     }

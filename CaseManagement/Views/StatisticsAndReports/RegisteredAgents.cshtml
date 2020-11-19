@@ -8,27 +8,68 @@
     </div>
 }
 
+@if (this.TempData["MakeLeadSuccess"] as bool? == true)
+{
+    <div class="alert alert-dismissible alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Agent made Lead successfully.</strong>
+    </div>
+}
+
+@if (this.TempData["DeleteAgentSuccess"] as bool? == true)
+{
+    <div class="alert alert-dismissible alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Agent deleted successfully.</strong>
+    </div>
+}
+
+@if (this.TempData["RemoveLeadSuccess"] as bool? == true)
+{
+    <div class="alert alert-dismissible alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Agent removed from Lead role.</strong>
+    </div>
+}
+
 <table class="table table-hover border">
     <thead>
         <tr class="table-active">
 
+            <th scope="col">CUser</th>
             <th scope="col">Name</th>
-            <th scope="col">Email</th>
-            <th scope="col">Last activity</th>
-            <th scope="col"></th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Make lead</th>
+            <th scope="col">Remove lead</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Reset pass</th>
         </tr>
     </thead>
     <tbody>
 
         @foreach (var agent in Model.AllAgents)
         {
-            <tr>
-                <td>@agent.FullName</td>
-                <td>@agent.Email</td>
-                <td>@agent.LastActivityDate.ToString("dd MMM yyyy")</td>
-                <td><a class="btn btn-dark p-1" asp-controller="Users" asp-action="ResetAgentPassword" asp-route-userId="@agent.Id">Reset pass</a></td>
-            </tr>
+        <tr>
+            <td>@agent.CUser</td>
+            <td>@agent.FullName</td>
+            <td>@agent.Email</td>
+            <td><a class="btn btn-info py-1 px-2 prompt" asp-controller="Users" asp-action="MakeLead" asp-route-userId="@agent.Id">ML</a></td>
+            <td><a class="btn btn-warning py-1 px-2 prompt" asp-controller="Users" asp-action="RemoveLead" asp-route-userId="@agent.Id">RL</a></td>
+            <td><a class="btn btn-danger py-1 px-2 prompt" asp-controller="Users" asp-action="DeleteAgent" asp-route-userId="@agent.Id">X</a></td>
+            <td><a class="btn btn-dark py-1 px-2 prompt" asp-controller="Users" asp-action="ResetAgentPassword" asp-route-userId="@agent.Id">RP</a></td>
+        </tr>
         }
 
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        Array.from(document.getElementsByClassName("prompt"))
+            .forEach(x => x.addEventListener("click", (e) => {
+                if (!confirm("Are you sure?")) {
+                    e.preventDefault();
+                }
+            }));
+    </script>
+}

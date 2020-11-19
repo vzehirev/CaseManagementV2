@@ -20,17 +20,19 @@ namespace CaseManagement.Services.SpcAgentAssignment
 
         public async Task<IEnumerable<SpcAgentAvailabiltyAndSkillsViewModel>> GetAllAgentsAvailabilityAndSkillsAsync()
         {
-            return await this.dbContext.Users.Select(x => new SpcAgentAvailabiltyAndSkillsViewModel
-            {
-                UserId = x.Id,
-                CUser = x.CUser,
-                FullName = x.FullName,
-                IsAvailable = x.SpcAgentAvailabilityAndSkills.IsAvailable,
-                Urgent = x.SpcAgentAvailabilityAndSkills.Urgent,
-                Immediate = x.SpcAgentAvailabilityAndSkills.Immediate,
-                Normal = x.SpcAgentAvailabilityAndSkills.Normal,
-                Low = x.SpcAgentAvailabilityAndSkills.Low
-            })
+            return await this.dbContext.Users.Where(x => !x.IsDeleted)
+                .Select(x => new SpcAgentAvailabiltyAndSkillsViewModel
+                {
+                    UserId = x.Id,
+                    CUser = x.CUser,
+                    FullName = x.FullName,
+                    IsAvailable = x.SpcAgentAvailabilityAndSkills.IsAvailable,
+                    Urgent = x.SpcAgentAvailabilityAndSkills.Urgent,
+                    Immediate = x.SpcAgentAvailabilityAndSkills.Immediate,
+                    Normal = x.SpcAgentAvailabilityAndSkills.Normal,
+                    Low = x.SpcAgentAvailabilityAndSkills.Low
+                })
+                .OrderByDescending(x => x.IsAvailable)
                 .ToArrayAsync();
         }
 

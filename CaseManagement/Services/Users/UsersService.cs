@@ -55,15 +55,16 @@ namespace CaseManagement.Services.Users
             return result.Succeeded;
         }
 
-        public async Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsLastActivityAsync()
+        public async Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsAsync()
         {
             return await this.dbContext.Users
-                .Select(u => new ReportsRegisteredAgentsAgentViewModel
+                .Where(x=>!x.IsDeleted)
+                .Select(x => new ReportsRegisteredAgentsAgentViewModel
                 {
-                    Id = u.Id,
-                    Email = u.Email,
-                    FullName = string.Join(' ', u.FirstName, u.LastName),
-                    LastActivityDate = u.LastActivity,
+                    Id = x.Id,
+                    Email = x.Email,
+                    FullName = x.FullName,
+                    CUser = x.CUser
                 })
                 .ToArrayAsync();
         }
@@ -71,12 +72,52 @@ namespace CaseManagement.Services.Users
         public async Task<IEnumerable<ReportsAgentsActivitiesAgentViewModel>> GetAllAgentsIdAndFullNameAsync()
         {
             return await this.dbContext.Users
-                .Select(u => new ReportsAgentsActivitiesAgentViewModel
+                .Where(x => !x.IsDeleted)
+                .Select(x => new ReportsAgentsActivitiesAgentViewModel
                 {
-                    Id = u.Id,
-                    FullName = string.Join(' ', u.FirstName, u.LastName),
+                    Id = x.Id,
+                    FullName = x.FullName,
                 })
                 .ToArrayAsync();
+        }
+
+        public async Task<bool> MakeLead(string userId)
+        {
+            var user = await this.UserManager.FindByIdAsync(userId);
+            var result = await this.UserManager.AddToRoleAsync(user, "Lead");
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> DeleteAgent(string userId)
+        {
+            var user = await this.UserManager.FindByIdAsync(userId);
+            user.IsDeleted = true;
+
+            var result = await UserManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> RemoveLead(string userId)
+        {
+            var user = await this.UserManager.FindByIdAsync(userId);
+            var result = await this.UserManager.RemoveFromRoleAsync(user, "Lead");
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

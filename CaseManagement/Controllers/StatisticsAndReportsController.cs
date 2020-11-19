@@ -30,7 +30,7 @@ namespace CaseManagement.Controllers
         {
             var viewModel = new RegisteredAgentsViewModel
             {
-                AllAgents = await this.usersService.GetAllAgentsLastActivityAsync()
+                AllAgents = await this.usersService.GetAllAgentsAsync()
             };
 
             return View(viewModel);

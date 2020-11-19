@@ -34,6 +34,8 @@ namespace CaseManagement.Models
 
         public DateTime? SpcLastTicketAssignedAt { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         [NotMapped]
         public string FullName
         {

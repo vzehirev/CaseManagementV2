@@ -1,4 +1,5 @@
 ﻿using CaseManagement.Models;
+using CaseManagement.Services.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,14 @@ namespace CaseManagement.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUsersService _usersService;
         private readonly ILogger<LoginModel> _logger;
 
         public LoginModel(SignInManager<ApplicationUser> signInManager,
+            IUsersService usersService,
             ILogger<LoginModel> logger)
         {
+            _usersService = usersService;
             _signInManager = signInManager;
             _logger = logger;
         }
@@ -74,6 +78,15 @@ namespace CaseManagement.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+
+                var user = await this._usersService.UserManager.FindByEmailAsync(Input.Email);
+
+                if (user != null && user.IsDeleted)
+                {
+                    ModelState.AddModelError(string.Empty, "User deleted.");
+                    return Page();
+                }
+
                 Microsoft.AspNetCore.Identity.SignInResult result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {

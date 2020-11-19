@@ -10,6 +10,6 @@ namespace CaseManagement.ViewModels.Agents
 
         public string FullName { get; set; }
 
-        public DateTime LastActivityDate { get; set; }
+        public string CUser { get; set; }
     }
 }
