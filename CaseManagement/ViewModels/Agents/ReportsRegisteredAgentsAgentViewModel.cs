@@ -11,5 +11,7 @@ namespace CaseManagement.ViewModels.Agents
         public string FullName { get; set; }
 
         public string CUser { get; set; }
+
+        public bool IsLead { get; set; }
     }
 }

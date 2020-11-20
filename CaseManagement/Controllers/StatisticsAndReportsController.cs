@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.VisualBasic;
 using System;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
@@ -32,6 +33,8 @@ namespace CaseManagement.Controllers
             {
                 AllAgents = await this.usersService.GetAllAgentsAsync()
             };
+
+            viewModel.AllAgents = viewModel.AllAgents.OrderByDescending(x => x.IsLead).ToArray();
 
             return View(viewModel);
         }

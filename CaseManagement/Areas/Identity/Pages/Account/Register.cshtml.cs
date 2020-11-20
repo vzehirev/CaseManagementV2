@@ -51,6 +51,9 @@ namespace CaseManagement.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
+            public string CUser { get; set; }
+
+            [Required]
             [Display(Name = "First name")]
             public string FirstName { get; set; }
 
@@ -87,7 +90,8 @@ namespace CaseManagement.Areas.Identity.Pages.Account
                     UserName = Input.Email,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
-                    LastName = Input.LastName
+                    LastName = Input.LastName,
+                    CUser = Input.CUser
                 };
 
                 IdentityResult result = await _userManager.CreateAsync(user, Input.Password);

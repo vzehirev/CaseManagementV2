@@ -55,16 +55,17 @@ namespace CaseManagement.Services.Users
             return result.Succeeded;
         }
 
-        public async Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsAsync()
+        public async Task<ReportsRegisteredAgentsAgentViewModel[]> GetAllAgentsAsync()
         {
             return await this.dbContext.Users
-                .Where(x=>!x.IsDeleted)
+                .Where(x => !x.IsDeleted)
                 .Select(x => new ReportsRegisteredAgentsAgentViewModel
                 {
                     Id = x.Id,
                     Email = x.Email,
                     FullName = x.FullName,
-                    CUser = x.CUser
+                    CUser = x.CUser,
+                    IsLead = this.UserManager.IsInRoleAsync(x, "Lead").GetAwaiter().GetResult()
                 })
                 .ToArrayAsync();
         }

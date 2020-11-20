@@ -53,8 +53,8 @@
             <td>@agent.CUser</td>
             <td>@agent.FullName</td>
             <td>@agent.Email</td>
-            <td><a class="btn btn-info py-1 px-2 prompt" asp-controller="Users" asp-action="MakeLead" asp-route-userId="@agent.Id">ML</a></td>
-            <td><a class="btn btn-warning py-1 px-2 prompt" asp-controller="Users" asp-action="RemoveLead" asp-route-userId="@agent.Id">RL</a></td>
+            <td><a class="btn btn-info py-1 px-2 prompt @(agent.IsLead ? "disabled" : "")" asp-controller="Users" asp-action="MakeLead" asp-route-userId="@agent.Id">ML</a></td>
+            <td><a class="btn btn-warning py-1 px-2 prompt @(!agent.IsLead ? "disabled" : "")" asp-controller="Users" asp-action="RemoveLead" asp-route-userId="@agent.Id">RL</a></td>
             <td><a class="btn btn-danger py-1 px-2 prompt" asp-controller="Users" asp-action="DeleteAgent" asp-route-userId="@agent.Id">X</a></td>
             <td><a class="btn btn-dark py-1 px-2 prompt" asp-controller="Users" asp-action="ResetAgentPassword" asp-route-userId="@agent.Id">RP</a></td>
         </tr>

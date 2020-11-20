@@ -24,7 +24,7 @@ namespace CaseManagement.Services.Users
 
         Task<bool> RemoveLead(string userId);
 
-        Task<IEnumerable<ReportsRegisteredAgentsAgentViewModel>> GetAllAgentsAsync();
+        Task<ReportsRegisteredAgentsAgentViewModel[]> GetAllAgentsAsync();
 
         Task<IEnumerable<ReportsAgentsActivitiesAgentViewModel>> GetAllAgentsIdAndFullNameAsync();
     }
